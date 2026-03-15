@@ -1,5 +1,5 @@
 import MapView from "react-native-maps";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 
 export default function CrimeMapScreen() {
 
@@ -15,6 +15,20 @@ export default function CrimeMapScreen() {
           longitudeDelta: 0.05,
         }}
       />
+
+      {/* Overlay Card */}
+
+      <View className="absolute bottom-6 left-4 right-4 bg-white p-4 rounded-2xl shadow-lg">
+
+        <Text className="text-lg font-semibold">
+          High Risk Area
+        </Text>
+
+        <Text className="text-gray-500 mt-1">
+          Theft incidents reported nearby
+        </Text>
+
+      </View>
 
     </View>
   );

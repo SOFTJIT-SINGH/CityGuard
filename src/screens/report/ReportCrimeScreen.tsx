@@ -1,31 +1,37 @@
-import { View, Text, TextInput, Button } from "react-native";
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
 
 export default function ReportCrimeScreen() {
 
   return (
-    <View className="flex-1 p-4">
+    <View className="flex-1 bg-slate-50 p-4">
 
-      <Text className="text-2xl font-bold mb-4">
-        Report Crime
+      <Text className="text-2xl font-bold mb-6">
+        Report Incident
       </Text>
 
       <TextInput
         placeholder="Crime Title"
-        className="border p-3 rounded-lg mb-3"
+        className="bg-white p-4 rounded-xl mb-4 shadow"
       />
 
       <TextInput
-        placeholder="Description"
+        placeholder="Describe incident..."
         multiline
         numberOfLines={4}
-        className="border p-3 rounded-lg mb-3"
+        className="bg-white p-4 rounded-xl mb-4 shadow"
       />
 
-      <Button title="Upload Evidence" />
+      <TouchableOpacity className="bg-gray-900 p-4 rounded-xl mb-4">
+        <Text className="text-white text-center">
+          Upload Image / Video
+        </Text>
+      </TouchableOpacity>
 
-      <View className="mt-4">
-        <Button title="Submit Report" />
-      </View>
+      <TouchableOpacity className="bg-blue-600 p-4 rounded-xl">
+        <Text className="text-white text-center font-semibold">
+          Submit Report
+        </Text>
+      </TouchableOpacity>
 
     </View>
   );

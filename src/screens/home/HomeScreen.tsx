@@ -1,44 +1,50 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from 'react-native';
+import GlassCard from '../../components/ui/GlassCard';
+import * as Location from 'expo-location';
+import { useEffect } from 'react';
 
 export default function HomeScreen({ navigation }: any) {
+  useEffect(() => {
+    const getLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
 
+      if (status !== 'granted') return;
+
+      const location = await Location.getCurrentPositionAsync({});
+
+      console.log(location.coords);
+    };
+
+    getLocation();
+  }, []);
+  
   return (
-    <View className="flex-1 bg-gray-100 p-4">
+    <View className="flex-1 bg-slate-100 p-4">
+      <Text className="mb-6 text-3xl font-bold">CityGuard</Text>
 
-      <Text className="text-2xl font-bold mb-6">
-        CityGuard Dashboard
-      </Text>
+      {/* SOS */}
 
-      <TouchableOpacity
-        className="bg-red-600 p-4 rounded-xl mb-4"
-        onPress={() => navigation.navigate("ReportCrime")}
-      >
-        <Text className="text-white text-center text-lg">
-          Report Crime
-        </Text>
+      <TouchableOpacity className="mb-6 rounded-2xl bg-red-500 p-6 shadow-lg">
+        <Text className="text-center text-xl font-bold text-white">EMERGENCY SOS</Text>
       </TouchableOpacity>
 
-      <View className="bg-white p-4 rounded-xl mb-4">
-        <Text className="text-lg font-semibold">
-          Crime Heatmap
-        </Text>
-        <Text>View dangerous areas nearby</Text>
-      </View>
+      <View className="flex-row justify-between">
+        <TouchableOpacity className="w-[48%]" onPress={() => navigation.navigate('ReportCrime')}>
+          <GlassCard>
+            <Text className="text-lg font-semibold">Report Crime</Text>
 
-      <View className="bg-white p-4 rounded-xl mb-4">
-        <Text className="text-lg font-semibold">
-          AI Crime Prediction
-        </Text>
-        <Text>Upcoming risk zones</Text>
-      </View>
+            <Text className="mt-1 text-gray-600">Upload incident</Text>
+          </GlassCard>
+        </TouchableOpacity>
 
-      <View className="bg-white p-4 rounded-xl">
-        <Text className="text-lg font-semibold">
-          SOS Emergency
-        </Text>
-        <Text>Send instant alert to police</Text>
-      </View>
+        <TouchableOpacity className="w-[48%]">
+          <GlassCard>
+            <Text className="text-lg font-semibold">Crime Map</Text>
 
+            <Text className="mt-1 text-gray-600">Nearby danger</Text>
+          </GlassCard>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
