@@ -1,65 +1,36 @@
-import React, { useState } from 'react';
-import { TouchableOpacity, Text, Alert, ActivityIndicator } from 'react-native';
-import * as Location from 'expo-location';
-import * as SMS from 'expo-sms';
-import * as Linking from 'expo-linking';
+import { View, Text, TouchableOpacity } from "react-native";
 
-export default function SOSButton() {
-  const [loading, setLoading] = useState(false);
-
-  const triggerSOS = async () => {
-    setLoading(true);
-    try {
-      // 1. Request Location Permissions
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'We need your location to send the SOS.');
-        setLoading(false);
-        return;
-      }
-
-      // 2. Get Current Location
-      let location = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = location.coords;
-      const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-
-      const emergencyMessage = `SOS! I need help. I am currently at this location: ${googleMapsLink}`;
-
-      // 3. Try to open SMS with the message
-      const isAvailable = await SMS.isAvailableAsync();
-      if (isAvailable) {
-        // You can replace these with actual emergency contact numbers from your future database
-        await SMS.sendSMSAsync(
-          ['112', '911'], 
-          emergencyMessage
-        );
-      } else {
-        // Fallback: If SMS isn't available (like on some simulators), open the dialer
-        Linking.openURL('tel:112');
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong while sending the SOS.');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function SOSModal({ visible, countdown, cancel }: any) {
+  if (!visible) return null;
 
   return (
-    <TouchableOpacity
-      onPress={triggerSOS}
-      disabled={loading}
-      className={`w-40 h-40 rounded-full items-center justify-center shadow-2xl border-4 border-red-300 ${
-        loading ? 'bg-red-400' : 'bg-red-600'
-      }`}
-    >
-      {loading ? (
-        <ActivityIndicator size="large" color="white" />
-      ) : (
-        <Text className="text-white text-4xl font-extrabold tracking-widest">
-          SOS
+    <View className="absolute inset-0 items-center justify-center bg-black/60 z-50">
+      <View className="w-[85%] max-w-sm rounded-[32px] bg-white p-8 items-center shadow-2xl">
+        
+        {/* Red Warning Circle */}
+        <View className="h-20 w-20 rounded-full bg-red-100 items-center justify-center mb-4">
+          <View className="h-14 w-14 rounded-full bg-red-500 items-center justify-center animate-pulse">
+            <Text className="text-white text-2xl font-black">{countdown}</Text>
+          </View>
+        </View>
+
+        <Text className="text-center text-2xl font-black text-gray-900">
+          Emergency Alert
         </Text>
-      )}
-    </TouchableOpacity>
+
+        <Text className="mt-2 text-center text-gray-500 font-medium text-base mb-8">
+          Notifying emergency contacts and authorities in {countdown} seconds...
+        </Text>
+
+        <TouchableOpacity
+          onPress={cancel}
+          className="w-full rounded-2xl bg-gray-100 py-4 border border-gray-200"
+        >
+          <Text className="text-center text-gray-900 text-lg font-bold">
+            Cancel Alert
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
