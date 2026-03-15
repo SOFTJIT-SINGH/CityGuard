@@ -1,14 +1,12 @@
 import { TouchableOpacity, Text } from "react-native";
 
-export default function PanicButton() {
-
+export default function PanicButton({ onPress }: any) {
   return (
     <TouchableOpacity
-      className="absolute bottom-8 right-6 bg-red-600 w-16 h-16 rounded-full justify-center items-center shadow-xl"
+      onPress={onPress}
+      className="absolute bottom-10 right-6 h-16 w-16 items-center justify-center rounded-full bg-red-600 shadow-xl"
     >
-      <Text className="text-white font-bold">
-        SOS
-      </Text>
+      <Text className="font-bold text-white">SOS</Text>
     </TouchableOpacity>
   );
 }

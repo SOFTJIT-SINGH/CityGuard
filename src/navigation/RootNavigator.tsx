@@ -5,7 +5,8 @@ import MainNavigator from "./MainNavigator";
 
 export default function RootNavigator() {
 
-  const isLoggedIn = false; // later connect to auth state
+  // const isLoggedIn = false; // later connect to auth state
+  const isLoggedIn = true; // later connect to auth state
 
   return (
     <NavigationContainer>
