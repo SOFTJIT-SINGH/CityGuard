@@ -1,135 +1,80 @@
-import MapView, { Marker } from 'react-native-maps';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
-import BottomSheet from '@gorhom/bottom-sheet';
-import { useRef, useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ActivityIndicator, Alert } from 'react-native';
+import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
+import * as Location from 'expo-location';
+
 export default function CrimeMapScreen() {
-  const [selectedCrime, setSelectedCrime] = useState<any>(null);
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['10%', '35%'], []);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const handleMarkerPress = (crime: any) => {
-    setSelectedCrime(crime);
-    bottomSheetRef.current?.snapToIndex(1);
-  };
+  // Mock data for hotspots (We will fetch this from Supabase tomorrow)
+  const mockHotspots = [
+    { id: 1, latitude: 31.6340, longitude: 74.8723, title: "Theft Reported", type: "danger" }, // Near Golden Temple area
+    { id: 2, latitude: 31.6310, longitude: 74.8750, title: "Suspicious Activity", type: "warning" },
+  ];
 
-const crimes = [
-  {
-    id: 1,
-    title: "Mobile Theft",
-    description: "Phone stolen near bus stand",
-    category: "Theft",
-    time: "10 mins ago",
-    image:
-      "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc",
-    latitude: 31.326,
-    longitude: 75.5762,
-  },
-  {
-    id: 2,
-    title: "Chain Snatching",
-    description: "Two suspects on bike",
-    category: "Robbery",
-    time: "25 mins ago",
-    image:
-      "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
-    latitude: 31.3275,
-    longitude: 75.579,
-  },
-];
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let currentLocation = await Location.getCurrentPositionAsync({});
+      setLocation(currentLocation);
+    })();
+  }, []);
+
+  if (!location) {
+    return (
+      <View className="flex-1 justify-center items-center bg-white">
+        <ActivityIndicator size="large" color="#EF4444" />
+        <Text className="mt-4 text-gray-500 font-medium">Locating you...</Text>
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1">
       <MapView
-        style={{ flex: 1 }}
+        className="w-full h-full"
+        // provider={PROVIDER_GOOGLE} // Uncomment this if testing on Android to force Google Maps
+        showsUserLocation={true}
+        showsMyLocationButton={true}
         initialRegion={{
-          latitude: 31.1471,
-          longitude: 75.3412,
-          latitudeDelta: 0.05,
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: 0.05, // Zoom level
           longitudeDelta: 0.05,
-        }}>
-        {crimes.map((crime) => (
+        }}
+      >
+        {/* Render Hotspot Markers */}
+        {mockHotspots.map((spot) => (
           <Marker
-            key={crime.id}
-            coordinate={{
-              latitude: crime.latitude,
-              longitude: crime.longitude,
-            }}
-            onPress={() => handleMarkerPress(crime)}
+            key={spot.id}
+            coordinate={{ latitude: spot.latitude, longitude: spot.longitude }}
+            title={spot.title}
+            pinColor={spot.type === 'danger' ? 'red' : 'orange'}
+          />
+        ))}
+
+        {/* Draw a danger zone circle */}
+        {mockHotspots.map((spot) => (
+          <Circle
+            key={`circle-${spot.id}`}
+            center={{ latitude: spot.latitude, longitude: spot.longitude }}
+            radius={500} // 500 meters
+            fillColor={spot.type === 'danger' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)'}
+            strokeColor={spot.type === 'danger' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(245, 158, 11, 0.5)'}
           />
         ))}
       </MapView>
 
-<BottomSheet
-  ref={bottomSheetRef}
-  index={0}
-  snapPoints={snapPoints}
->
-
-  <View className="p-4">
-
-    {selectedCrime ? (
-      <>
-        {/* Crime Image */}
-
-        <Image
-          source={{ uri: selectedCrime.image }}
-          className="h-40 w-full rounded-xl"
-        />
-
-        {/* Crime Title */}
-
-        <Text className="mt-3 text-xl font-bold">
-          {selectedCrime.title}
-        </Text>
-
-        {/* Category + Time */}
-
-        <View className="mt-1 flex-row justify-between">
-
-          <Text className="text-red-500 font-semibold">
-            {selectedCrime.category}
-          </Text>
-
-          <Text className="text-gray-500">
-            {selectedCrime.time}
-          </Text>
-
-        </View>
-
-        {/* Description */}
-
-        <Text className="mt-3 text-gray-600">
-          {selectedCrime.description}
-        </Text>
-
-        {/* Action Button */}
-
-        <TouchableOpacity className="mt-4 rounded-xl bg-blue-600 p-3">
-
-          <Text className="text-center text-white font-semibold">
-            View Full Report
-          </Text>
-
-        </TouchableOpacity>
-      </>
-    ) : (
-      <Text>Select a crime marker</Text>
-    )}
-
-  </View>
-
-</BottomSheet>
-      {/* Refresh Button */}
-
-      <TouchableOpacity className="absolute right-4 top-12 rounded-xl bg-white p-3 shadow">
-        <Text>Refresh</Text>
-      </TouchableOpacity>
-
-      {/* Info Card */}
-
-      <View className="absolute bottom-6 left-4 right-4 rounded-2xl bg-white/80 p-4 shadow-lg">
-        <Text className="text-lg font-semibold">Crime Hotspot</Text>
-
-        <Text className="mt-1 text-gray-600">Multiple theft reports detected in this area.</Text>
+      {/* Floating Header */}
+      <View className="absolute top-12 left-4 right-4 bg-white/90 p-4 rounded-2xl shadow-lg border border-gray-100">
+        <Text className="text-xl font-black text-gray-900 text-center">Live Safety Map</Text>
+        <Text className="text-xs text-center text-gray-500 mt-1">Showing real-time incident reports</Text>
       </View>
     </View>
   );

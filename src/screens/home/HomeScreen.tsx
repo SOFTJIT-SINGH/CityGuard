@@ -5,6 +5,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import PanicButton from '../../components/ui/PanicButton';
 import SOSModal from '../../components/ui/SOSButton';
+import * as SMS from 'expo-sms'; // Make sure to add this import at the top!
+import * as Linking from 'expo-linking';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function HomeScreen({ navigation }: any) {
   const [showSOS, setShowSOS] = useState(false);
@@ -29,30 +32,53 @@ export default function HomeScreen({ navigation }: any) {
   const cancelSOS = () => setShowSOS(false);
 
   const sendEmergencyAlert = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Location permission denied');
-      return;
+    try {
+      // 1. Get Location
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'We need your location to send the SOS.');
+        return;
+      }
+
+      const loc = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = loc.coords;
+      const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+
+      // 2. Prepare the message
+      const emergencyMessage = `SOS! I need help. I am currently at this location: ${googleMapsLink}`;
+
+      // 3. Send the SMS
+      const isAvailable = await SMS.isAvailableAsync();
+      if (isAvailable) {
+        await SMS.sendSMSAsync(
+          ['112', '911'], // Replace with actual emergency contacts later
+          emergencyMessage
+        );
+      } else {
+        // Fallback if SMS fails (like on an emulator)
+        Linking.openURL('tel:112');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to send SOS.');
+      console.error(error);
     }
-    const loc = await Location.getCurrentPositionAsync({});
-    console.log('SOS LOCATION:', loc.coords);
-    Alert.alert('Emergency alert sent!');
   };
 
   return (
     <View className="flex-1 bg-[#F4F7F6]">
       <StatusBar style="dark" />
-      
+
       <ScrollView className="flex-1 pt-16" showsVerticalScrollIndicator={false}>
-        
         {/* HEADER */}
-        <View className="px-6 mb-8 flex-row items-center justify-between">
+        <View className="mb-8 flex-row items-center justify-between px-6">
           <View>
-            <Text className="text-gray-400 text-sm font-bold uppercase tracking-widest mb-1">CityGuard</Text>
+            <Text className="mb-1 text-sm font-bold uppercase tracking-widest text-gray-400">
+              CityGuard
+            </Text>
             <Text className="text-3xl font-black text-gray-900">Amritsar</Text>
           </View>
-          <TouchableOpacity className="bg-white p-1 rounded-full shadow-sm border border-gray-100">
-            <View className="bg-[#30AF5B]/10 p-3 rounded-full">
+          <TouchableOpacity className="rounded-full border border-gray-100 bg-white p-1 shadow-sm">
+            <View className="rounded-full bg-[#30AF5B]/10 p-3">
               <Ionicons name="person" size={24} color="#30AF5B" />
             </View>
           </TouchableOpacity>
@@ -60,106 +86,109 @@ export default function HomeScreen({ navigation }: any) {
 
         {/* HORIZONTAL SWIPE CARDS (The Hilink Vibe) */}
         <View className="mb-10">
-          <ScrollView 
-            horizontal 
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }}
-          >
+            contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }}>
             {/* Primary Feature Card: AI Assist */}
-            <TouchableOpacity 
-              className="bg-[#30AF5B] w-[220px] h-[240px] rounded-[36px] p-6 justify-between shadow-xl shadow-[#30AF5B]/40"
+            <TouchableOpacity
+              className="h-[240px] w-[220px] justify-between rounded-[36px] bg-[#30AF5B] p-6 shadow-xl shadow-[#30AF5B]/40"
               onPress={() => navigation.navigate('Chatbot')}
-              activeOpacity={0.9}
-            >
-              <View className="bg-white/20 w-16 h-16 rounded-full items-center justify-center">
+              activeOpacity={0.9}>
+              <View className="h-16 w-16 items-center justify-center rounded-full bg-white/20">
                 <Ionicons name="chatbubbles" size={32} color="white" />
               </View>
               <View>
-                <Text className="text-white text-2xl font-black mb-1">AI Assist</Text>
-                <Text className="text-white/80 text-sm font-medium leading-relaxed">Instant safety guidance & tips</Text>
+                <Text className="mb-1 text-2xl font-black text-white">AI Assist</Text>
+                <Text className="text-sm font-medium leading-relaxed text-white/80">
+                  Instant safety guidance & tips
+                </Text>
               </View>
             </TouchableOpacity>
 
             {/* Secondary Card: Crime Map */}
-            <TouchableOpacity 
-              className="bg-white w-[220px] h-[240px] rounded-[36px] p-6 justify-between shadow-sm border border-gray-100"
+            <TouchableOpacity
+              className="h-[240px] w-[220px] justify-between rounded-[36px] border border-gray-100 bg-white p-6 shadow-sm"
               onPress={() => navigation.navigate('Map')}
-              activeOpacity={0.9}
-            >
-              <View className="bg-[#30AF5B]/10 w-16 h-16 rounded-full items-center justify-center">
+              activeOpacity={0.9}>
+              <View className="h-16 w-16 items-center justify-center rounded-full bg-[#30AF5B]/10">
                 <Ionicons name="map" size={32} color="#30AF5B" />
               </View>
               <View>
-                <Text className="text-gray-900 text-2xl font-black mb-1">Map</Text>
-                <Text className="text-gray-500 text-sm font-medium leading-relaxed">View live local hotspots</Text>
+                <Text className="mb-1 text-2xl font-black text-gray-900">Map</Text>
+                <Text className="text-sm font-medium leading-relaxed text-gray-500">
+                  View live local hotspots
+                </Text>
               </View>
             </TouchableOpacity>
 
             {/* Tertiary Card: Report */}
-            <TouchableOpacity 
-              className="bg-white w-[220px] h-[240px] rounded-[36px] p-6 justify-between shadow-sm border border-gray-100"
+            <TouchableOpacity
+              className="h-[240px] w-[220px] justify-between rounded-[36px] border border-gray-100 bg-white p-6 shadow-sm"
               onPress={() => navigation.navigate('ReportCrime')}
-              activeOpacity={0.9}
-            >
-              <View className="bg-blue-50 w-16 h-16 rounded-full items-center justify-center">
+              activeOpacity={0.9}>
+              <View className="h-16 w-16 items-center justify-center rounded-full bg-blue-50">
                 <Ionicons name="megaphone" size={32} color="#2563EB" />
               </View>
               <View>
-                <Text className="text-gray-900 text-2xl font-black mb-1">Report</Text>
-                <Text className="text-gray-500 text-sm font-medium leading-relaxed">File an incident instantly</Text>
+                <Text className="mb-1 text-2xl font-black text-gray-900">Report</Text>
+                <Text className="text-sm font-medium leading-relaxed text-gray-500">
+                  File an incident instantly
+                </Text>
               </View>
             </TouchableOpacity>
           </ScrollView>
         </View>
 
         {/* MASSIVE SOS PILL CARD */}
-        <View className="px-6 mb-10">
-          <Text className="text-lg font-bold text-gray-900 mb-4 px-1">Quick Actions</Text>
-          <TouchableOpacity 
+        <View className="mb-10 px-6">
+          <Text className="mb-4 px-1 text-lg font-bold text-gray-900">Quick Actions</Text>
+          <TouchableOpacity
             activeOpacity={0.9}
             onPress={triggerSOS}
-            className="bg-white rounded-[40px] p-3 shadow-sm border border-gray-100 flex-row items-center"
-          >
-            <View className="bg-[#EF4444] rounded-[32px] p-6 items-center justify-center shadow-lg shadow-red-500/30 mr-5">
-              <Ionicons name="shield-alert-outline" size={44} color="white" />
+            className="flex-row items-center rounded-[40px] border border-gray-100 bg-white p-3 shadow-sm">
+            <View className="mr-5 items-center justify-center rounded-[32px] bg-[#EF4444] p-6 shadow-lg shadow-red-500/30">
+              {/* <Ionicons name="shield" size={44} color="white" /> */}
+              <MaterialCommunityIcons name="shield-alert-outline" size={44} color="white" />
             </View>
             <View className="flex-1 pr-4">
-              <Text className="text-gray-900 text-2xl font-black mb-1">Emergency</Text>
-              <Text className="text-gray-500 text-sm font-medium leading-tight">Hold for 3 seconds to trigger response</Text>
+              <Text className="mb-1 text-2xl font-black text-gray-900">Emergency</Text>
+              <Text className="text-sm font-medium leading-tight text-gray-500">
+                Hold for 3 seconds to trigger response
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
 
         {/* LIVE FEED CARD */}
-        <View className="px-6 mb-12">
-          <View className="bg-white rounded-[36px] p-6 shadow-sm border border-gray-100">
-            <View className="flex-row items-center justify-between mb-6">
+        <View className="mb-12 px-6">
+          <View className="rounded-[36px] border border-gray-100 bg-white p-6 shadow-sm">
+            <View className="mb-6 flex-row items-center justify-between">
               <Text className="text-lg font-bold text-gray-900">Recent Alerts</Text>
               <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
             </View>
-            
-            <View className="flex-row items-center mb-6">
-              <View className="bg-red-50 p-3 rounded-2xl mr-4">
+
+            <View className="mb-6 flex-row items-center">
+              <View className="mr-4 rounded-2xl bg-red-50 p-3">
                 <Ionicons name="warning" size={24} color="#EF4444" />
               </View>
               <View className="flex-1">
                 <Text className="text-base font-bold text-gray-900">Theft Reported</Text>
-                <Text className="text-gray-500 text-xs mt-1">Bus Stand • 2m ago</Text>
+                <Text className="mt-1 text-xs text-gray-500">Bus Stand • 2m ago</Text>
               </View>
             </View>
 
             <View className="flex-row items-center">
-              <View className="bg-amber-50 p-3 rounded-2xl mr-4">
+              <View className="mr-4 rounded-2xl bg-amber-50 p-3">
                 <Ionicons name="eye" size={24} color="#F59E0B" />
               </View>
               <View className="flex-1">
                 <Text className="text-base font-bold text-gray-900">Suspicious Activity</Text>
-                <Text className="text-gray-500 text-xs mt-1">Mall Road • 15m ago</Text>
+                <Text className="mt-1 text-xs text-gray-500">Mall Road • 15m ago</Text>
               </View>
             </View>
           </View>
         </View>
-
       </ScrollView>
 
       <PanicButton onPress={triggerSOS} />
