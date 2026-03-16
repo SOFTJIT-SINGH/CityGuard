@@ -48,7 +48,8 @@ export default function HomeScreen({ navigation }: any) {
 
       const isAvailable = await SMS.isAvailableAsync();
       if (isAvailable) {
-        await SMS.sendSMSAsync(['112', '911'], emergencyMessage);
+        // await SMS.sendSMSAsync(['112', '911'], emergencyMessage);
+        await SMS.sendSMSAsync(['8528473685'], emergencyMessage);
       } else {
         Linking.openURL('tel:112');
       }
@@ -70,14 +71,26 @@ export default function HomeScreen({ navigation }: any) {
         contentContainerStyle={{ paddingBottom: 40 }}
       >
         {/* SLEEK, PROFESSIONAL HEADER */}
+        {/* SLEEK, PROFESSIONAL HEADER WITH APP NAME */}
         <View className="mb-6 flex-row items-center justify-between px-6">
-          <View>
-            <Text className="mb-1 text-xs font-bold text-gray-400 tracking-wider uppercase">
-              Current Location
-            </Text>
-            <View className="flex-row items-center">
-              <Ionicons name="location" size={20} color="#30AF5B" style={{ marginRight: 4 }} />
-              <Text className="text-2xl font-extrabold text-gray-900 tracking-tight">Amritsar</Text>
+          <View className="flex-row items-center">
+            {/* Hamburger Menu Icon for Sidebar */}
+            <TouchableOpacity 
+              onPress={() => navigation.openDrawer()} 
+              className="mr-4 bg-white p-2 rounded-full shadow-sm border border-gray-100"
+            >
+              <Ionicons name="menu" size={24} color="#111827" />
+            </TouchableOpacity>
+            
+            <View>
+              {/* APP NAME IS BACK */}
+              <Text className="mb-0.5 text-lg font-black text-[#30AF5B] tracking-tight">
+                CityGuard
+              </Text>
+              <View className="flex-row items-center">
+                <Ionicons name="location" size={14} color="#9CA3AF" style={{ marginRight: 2 }} />
+                <Text className="text-xs font-bold text-gray-500 tracking-wider uppercase">Amritsar</Text>
+              </View>
             </View>
           </View>
           
