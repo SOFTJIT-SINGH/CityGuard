@@ -15,57 +15,61 @@ export default function AnalyticsScreen({ navigation }: any) {
   };
 
   const pieData = [
-    { name: 'Theft', population: 45, color: '#EF4444', legendFontColor: '#374151', legendFontSize: 12 },
-    { name: 'Assault', population: 15, color: '#F97316', legendFontColor: '#374151', legendFontSize: 12 },
-    { name: 'Vandalism', population: 25, color: '#F59E0B', legendFontColor: '#374151', legendFontSize: 12 },
-    { name: 'Suspicious', population: 60, color: '#30AF5B', legendFontColor: '#374151', legendFontSize: 12 },
+    { name: 'Theft', population: 45, color: '#EF4444', legendFontColor: '#9CA3AF', legendFontSize: 12 },
+    { name: 'Assault', population: 15, color: '#F97316', legendFontColor: '#9CA3AF', legendFontSize: 12 },
+    { name: 'Vandalism', population: 25, color: '#F59E0B', legendFontColor: '#9CA3AF', legendFontSize: 12 },
+    { name: 'Suspicious', population: 60, color: '#10B981', legendFontColor: '#9CA3AF', legendFontSize: 12 },
   ];
 
   const chartConfig = {
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
-    color: (opacity = 1) => `rgba(48, 175, 91, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(107, 114, 128, ${opacity})`,
+    backgroundGradientFrom: '#111827', // gray-900
+    backgroundGradientTo: '#111827',
+    color: (opacity = 1) => `rgba(16, 185, 129, ${opacity})`, // Emerald Green
+    labelColor: (opacity = 1) => `rgba(156, 163, 175, ${opacity})`, // Gray-400
     barPercentage: 0.6,
     decimalPlaces: 0,
+    propsForBackgroundLines: {
+        strokeWidth: 1,
+        stroke: '#1F2937', // very subtle grid lines
+    }
   };
 
   return (
-    <ScrollView className="flex-1 bg-[#F4F7F6]" style={{ paddingTop: Math.max(insets.top, 20) + 12 }}>
+    <ScrollView className="flex-1 bg-gray-950" style={{ paddingTop: Math.max(insets.top, 20) + 12 }}>
       
-      {/* Header with Sidebar Menu Button */}
+      {/* Header */}
       <View className="px-6 mb-6 flex-row items-center">
         <TouchableOpacity 
           onPress={() => navigation.openDrawer()} 
-          className="mr-4 bg-white p-2 rounded-full shadow-sm border border-gray-100"
+          className="mr-4 bg-gray-900 p-2 rounded-full border border-gray-800 shadow-sm"
         >
-          <Ionicons name="menu" size={24} color="#111827" />
+          <Ionicons name="menu" size={24} color="#D1D5DB" />
         </TouchableOpacity>
 
-        <View className="bg-indigo-100 p-2 rounded-xl mr-3">
-          <Ionicons name="stats-chart" size={24} color="#6366F1" />
+        <View className="bg-blue-500/10 p-2 rounded-xl mr-3 border border-blue-500/20">
+          <Ionicons name="stats-chart" size={24} color="#3B82F6" />
         </View>
-        <Text className="text-2xl font-black text-gray-900 tracking-tight">System Analytics</Text>
+        <Text className="text-2xl font-black text-white tracking-tight">System Analytics</Text>
       </View>
 
       {/* Stats Row */}
       <View className="px-6 flex-row justify-between mb-8">
-        <View className="bg-white p-4 rounded-3xl w-[48%] shadow-sm border border-gray-100">
+        <View className="bg-gray-900 p-4 rounded-3xl w-[48%] shadow-lg border border-gray-800">
           <Text className="text-gray-500 text-xs font-bold uppercase mb-1">Total Reports</Text>
-          <Text className="text-3xl font-black text-gray-900">1,284</Text>
-          <Text className="text-emerald-500 text-xs font-bold mt-1">+12% this month</Text>
+          <Text className="text-3xl font-black text-white">1,284</Text>
+          <Text className="text-emerald-400 text-xs font-bold mt-1">+12% this month</Text>
         </View>
-        <View className="bg-white p-4 rounded-3xl w-[48%] shadow-sm border border-gray-100">
+        <View className="bg-gray-900 p-4 rounded-3xl w-[48%] shadow-lg border border-gray-800">
           <Text className="text-gray-500 text-xs font-bold uppercase mb-1">Resolution Rate</Text>
-          <Text className="text-3xl font-black text-gray-900">84%</Text>
-          <Text className="text-emerald-500 text-xs font-bold mt-1">+4% this month</Text>
+          <Text className="text-3xl font-black text-white">84%</Text>
+          <Text className="text-emerald-400 text-xs font-bold mt-1">+4% this month</Text>
         </View>
       </View>
 
       {/* Bar Chart */}
       <View className="px-6 mb-8">
-        <Text className="text-lg font-bold text-gray-900 mb-4 px-1">Monthly Incident Volume</Text>
-        <View className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 overflow-hidden items-center">
+        <Text className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 px-1">Monthly Incident Volume</Text>
+        <View className="bg-gray-900 rounded-3xl p-4 shadow-lg border border-gray-800 overflow-hidden items-center">
           <BarChart
             data={barData}
             width={screenWidth - 80}
@@ -81,8 +85,8 @@ export default function AnalyticsScreen({ navigation }: any) {
 
       {/* Pie Chart */}
       <View className="px-6 mb-12">
-        <Text className="text-lg font-bold text-gray-900 mb-4 px-1">Incident Distribution</Text>
-        <View className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 items-center">
+        <Text className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 px-1">Incident Distribution</Text>
+        <View className="bg-gray-900 rounded-3xl p-4 shadow-lg border border-gray-800 items-center">
           <PieChart
             data={pieData}
             width={screenWidth - 80}

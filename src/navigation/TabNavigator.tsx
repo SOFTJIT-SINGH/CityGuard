@@ -14,59 +14,26 @@ export default function TabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
-        headerShown: false, // THIS IS THE MAGIC LINE THAT HIDES THE UGLY HEADER!
-        tabBarActiveTintColor: '#30AF5B', // Your brand green
-        tabBarInactiveTintColor: '#9CA3AF', // Soft gray for inactive tabs
+        headerShown: false,
+        tabBarActiveTintColor: '#10B981', // Emerald 500
+        tabBarInactiveTintColor: '#6B7280', // Gray 500
         tabBarStyle: {
+          backgroundColor: '#111827', // Gray 900 (Dark background)
           borderTopWidth: 1,
-          borderTopColor: '#F3F4F6',
-          elevation: 0, // Removes Android shadow
-          shadowOpacity: 0, // Removes iOS shadow
+          borderTopColor: '#1F2937', // Gray 800 (Subtle border)
+          elevation: 0,
+          shadowOpacity: 0,
           height: 60,
           paddingBottom: 8,
           paddingTop: 8,
         },
       }}
     >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
-        }}
-      />
-
-      <Tab.Screen 
-        name="Map" 
-        component={CrimeMapScreen} 
-        options={{
-          tabBarIcon: ({ color, size }) => <Ionicons name="map" size={size} color={color} />,
-        }}
-      />
-
-      <Tab.Screen 
-        name="Chatbot" 
-        component={ChatbotScreen} 
-        options={{
-          tabBarIcon: ({ color, size }) => <Ionicons name="chatbubbles" size={size} color={color} />,
-        }}
-      />
-
-      <Tab.Screen 
-        name="Alerts" 
-        component={NotificationScreen} 
-        options={{
-          tabBarIcon: ({ color, size }) => <Ionicons name="notifications" size={size} color={color} />,
-        }}
-      />
-
-      <Tab.Screen 
-        name="Profile" 
-        component={ProfileScreen} 
-        options={{
-          tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} />,
-        }}
-      />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} /> }} />
+      <Tab.Screen name="Map" component={CrimeMapScreen} options={{ tabBarIcon: ({ color, size }) => <Ionicons name="radar" size={size} color={color} /> }} />
+      <Tab.Screen name="Chatbot" component={ChatbotScreen} options={{ tabBarIcon: ({ color, size }) => <Ionicons name="hardware-chip" size={size} color={color} /> }} />
+      <Tab.Screen name="Alerts" component={NotificationScreen} options={{ tabBarIcon: ({ color, size }) => <Ionicons name="notifications" size={size} color={color} /> }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} /> }} />
     </Tab.Navigator>
   );
 }
