@@ -3,8 +3,10 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
 
 import TabNavigator from './TabNavigator';
-// Temporarily importing Profile for the Admin dummy link
-import ProfileScreen from '../screens/profile/ProfileScreen'; 
+
+// 1. Import your brand new Admin Screens!
+import AnalyticsScreen from '../screens/admin/AnalyticsScreen';
+import CCTVScreen from '../screens/admin/CCTVScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -12,7 +14,7 @@ export default function MainNavigator() {
   return (
     <Drawer.Navigator
       screenOptions={{
-        headerShown: false, // Hides the ugly default drawer header
+        headerShown: false, // Keeps the ugly default header hidden
         drawerActiveBackgroundColor: '#30AF5B', // Your brand green!
         drawerActiveTintColor: '#fff',
         drawerInactiveTintColor: '#333',
@@ -35,24 +37,24 @@ export default function MainNavigator() {
         }}
       />
 
-      {/* 2. Admin / Police Dashboard Link (For your future feature) */}
+      {/* 2. Admin Analytics Dashboard */}
       <Drawer.Screen
-        name="AdminDashboard"
-        component={ProfileScreen} // Temporarily pointing to Profile
+        name="Analytics"
+        component={AnalyticsScreen}
         options={{
-          title: 'Admin Dashboard',
+          title: 'System Analytics',
           drawerIcon: ({ color, size }) => (
-            <Ionicons name="shield-half-outline" size={size} color={color} />
+            <Ionicons name="stats-chart-outline" size={size} color={color} />
           ),
         }}
       />
 
-      {/* 3. CCTV Integration Link (For your future feature) */}
+      {/* 3. CCTV Integration Matrix */}
       <Drawer.Screen
         name="CCTV"
-        component={ProfileScreen} // Temporarily pointing to Profile
+        component={CCTVScreen}
         options={{
-          title: 'Live CCTV',
+          title: 'Live CCTV Matrix',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="videocam-outline" size={size} color={color} />
           ),
