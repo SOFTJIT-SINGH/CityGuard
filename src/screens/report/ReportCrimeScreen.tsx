@@ -30,10 +30,10 @@ export default function ReportCrimeScreen() {
   const submitReport = () => { Alert.alert("Intel Uploaded", "Secure transmission successful."); };
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-gray-950" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView className="flex-1 bg-gray-950" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView className="p-6">
         
-        <View className="mb-6 flex-row items-center justify-between border-b border-gray-800 pb-4">
+        <View className="mb-6 flex-row items-center justify-between border-b border-gray-800 pb-4 mt-4">
             <View>
                 <Text className="text-2xl font-black text-white tracking-tight">File Report</Text>
                 <Text className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mt-1">Classified Incident Log</Text>

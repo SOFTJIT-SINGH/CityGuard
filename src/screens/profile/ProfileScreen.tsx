@@ -7,10 +7,10 @@ export default function ProfileScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   
   const userData = {
-    name: "Agent Singh",
-    id: "CG-8842-X",
-    emergencyContact: "+91 99887 76655",
-    bloodGroup: "O+",
+    name: "Softjit Singh",
+    id: "CU-8085-X",
+    emergencyContact: "+91 85284 73685",
+    bloodGroup: "A+",
   };
 
   return (

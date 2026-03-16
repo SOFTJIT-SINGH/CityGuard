@@ -1,10 +1,39 @@
-import React from "react";
-import AuthNavigator from "./AuthNavigator";
-import MainNavigator from "./MainNavigator";
+import React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+import AuthNavigator from './AuthNavigator';
+import MainNavigator from './MainNavigator';
+
+// THIS IS THE LINE YOU NEED!
+import ReportCrimeScreen from '../screens/report/ReportCrimeScreen'; 
+
+const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
-  const isLoggedIn = true; // later connect to auth state
+  const isLoggedIn = true; 
 
-  // Simply return the appropriate navigator based on state
-  return isLoggedIn ? <MainNavigator /> : <AuthNavigator />;
+  if (!isLoggedIn) {
+    return <AuthNavigator />;
+  }
+
+  return (
+    <Stack.Navigator>
+      <Stack.Screen 
+        name="Main" 
+        component={MainNavigator} 
+        options={{ headerShown: false }} 
+      />
+      
+      <Stack.Screen 
+        name="ReportCrime" 
+        component={ReportCrimeScreen} 
+        options={{ 
+          title: 'File Intel Report',
+          headerStyle: { backgroundColor: '#111827' },
+          headerTintColor: '#10B981',
+          headerTitleStyle: { color: '#fff', fontWeight: '900', letterSpacing: 1 }
+        }} 
+      />
+    </Stack.Navigator>
+  );
 }
