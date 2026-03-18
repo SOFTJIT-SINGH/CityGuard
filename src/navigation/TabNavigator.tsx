@@ -30,7 +30,7 @@ export default function TabNavigator() {
       }}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} /> }} />
-      <Tab.Screen name="Map" component={CrimeMapScreen} options={{ tabBarIcon: ({ color, size }) => <Ionicons name="radar" size={size} color={color} /> }} />
+      <Tab.Screen name="Map" component={CrimeMapScreen} options={{ tabBarIcon: ({ color, size }) => <Ionicons name="locate" size={size} color={color} /> }} />
       <Tab.Screen name="Chatbot" component={ChatbotScreen} options={{ tabBarIcon: ({ color, size }) => <Ionicons name="hardware-chip" size={size} color={color} /> }} />
       <Tab.Screen name="Alerts" component={NotificationScreen} options={{ tabBarIcon: ({ color, size }) => <Ionicons name="notifications" size={size} color={color} /> }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} /> }} />

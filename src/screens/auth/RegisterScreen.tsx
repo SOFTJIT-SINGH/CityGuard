@@ -11,7 +11,7 @@ export default function RegisterScreen({ navigation }: any) {
   const [password, setPassword] = useState('');
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-gray-950" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView className="flex-1 bg-gray-950" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <StatusBar style="light" />
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingTop: insets.top }}>
         

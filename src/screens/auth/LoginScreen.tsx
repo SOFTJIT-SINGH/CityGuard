@@ -8,7 +8,7 @@ export default function LoginScreen({ navigation }: any) {
   const [password, setPassword] = useState('');
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-gray-950 justify-center px-6" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView className="flex-1 bg-gray-950 justify-center px-6" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <StatusBar style="light" />
       
       <View className="items-center mb-10">
