@@ -1,37 +1,53 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
+import { supabase } from '../../lib/supabase';
+import dayjs from 'dayjs';
 
 export default function MyReportsScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
+  
+  const [myReports, setMyReports] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock Data: The user's submitted reports and their current status level (1 to 4)
-  const myReports = [
-    { 
-      id: "REP-992-ALPHA", 
-      title: "Suspicious Vehicle", 
-      date: "Oct 24, 22:15 HRS", 
-      statusLevel: 3, 
-      type: "warning" 
-    },
-    { 
-      id: "REP-884-BRAVO", 
-      title: "Vandalism at Bus Stand", 
-      date: "Oct 20, 14:30 HRS", 
-      statusLevel: 4, 
-      type: "resolved" 
-    },
-    { 
-      id: "REP-102-ECHO", 
-      title: "Noise Altercation", 
-      date: "Oct 25, 01:05 HRS", 
-      statusLevel: 1, 
-      type: "pending" 
-    },
-  ];
+  useFocusEffect(
+    useCallback(() => {
+      fetchReports();
+    }, [])
+  );
+
+  const fetchReports = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('reports')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('reported_at', { ascending: false });
+
+      if (data) {
+        setMyReports(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const statusSteps = ["Report Submitted", "Verified", "Authorities Dispatched", "Resolved"];
+
+  if (loading) {
+    return (
+      <View className="flex-1 bg-gray-950 items-center justify-center">
+        <ActivityIndicator color="#10B981" size="large" />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-gray-950" style={{ paddingTop: Math.max(insets.top, 20) + 12 }}>
@@ -62,18 +78,18 @@ export default function MyReportsScreen({ navigation }: any) {
             <View className="flex-row justify-between items-start mb-4 border-b border-gray-800 pb-4">
               <View>
                 <Text className="text-white text-lg font-black tracking-wide">{report.title}</Text>
-                <Text className="text-gray-500 text-xs font-mono mt-1">{report.date}</Text>
+                <Text className="text-gray-500 text-xs font-mono mt-1">{dayjs(report.reported_at).format('MMM D, HH:mm [HRS]')}</Text>
               </View>
               <View className="bg-gray-950 px-2 py-1 rounded-md border border-gray-800">
-                <Text className="text-emerald-400 text-[10px] font-mono tracking-widest">{report.id}</Text>
+                <Text className="text-emerald-400 text-[10px] font-mono tracking-widest">{report.report_tag}</Text>
               </View>
             </View>
 
             {/* Tactical Timeline Tracker */}
             <View className="mt-2">
               {statusSteps.map((step, stepIndex) => {
-                const isCompleted = stepIndex < report.statusLevel;
-                const isCurrent = stepIndex === report.statusLevel - 1;
+                const isCompleted = stepIndex < (report.status_level || 1);
+                const isCurrent = stepIndex === (report.status_level || 1) - 1;
                 const isLast = stepIndex === statusSteps.length - 1;
 
                 return (

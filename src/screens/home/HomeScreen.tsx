@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Alert, Image, Dimensions } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
@@ -21,26 +22,28 @@ export default function HomeScreen({ navigation }: any) {
   });
 
   // 2. Fetch Profile from Supabase on Load
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('full_name, operative_id')
-          .eq('id', user.id)
-          .single();
+  useFocusEffect(
+    useCallback(() => {
+      const fetchProfile = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('full_name, operative_id')
+            .eq('id', user.id)
+            .single();
 
-        if (data) {
-          setUserData({
-            full_name: data.full_name || 'Operative',
-            operative_id: data.operative_id || 'UNKNOWN',
-          });
+          if (data) {
+            setUserData({
+              full_name: data.full_name || 'Operative',
+              operative_id: data.operative_id || 'UNKNOWN',
+            });
+          }
         }
-      }
-    };
-    fetchProfile();
-  }, []);
+      };
+      fetchProfile();
+    }, [])
+  );
 
   const triggerSOS = () => {
     setCountdown(5);

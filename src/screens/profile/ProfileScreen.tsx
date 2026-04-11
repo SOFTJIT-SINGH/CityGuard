@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase'; // IMPORT SUPABASE
 
@@ -10,9 +11,11 @@ export default function ProfileScreen({ navigation }: any) {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfile();
+    }, [])
+  );
 
 const fetchProfile = async () => {
     try {
