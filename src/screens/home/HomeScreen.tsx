@@ -79,13 +79,13 @@ export default function HomeScreen({ navigation }: any) {
   };
 
   return (
-    <View className="flex-1 bg-[#05080D]">
+    <View className="flex-1 bg-gray-950">
       <StatusBar style="light" />
 
       {/* TOP GLASS HEADER */}
       <View
         style={{ paddingTop: insets.top + 10 }}
-        className="flex-row items-center justify-between border-b border-gray-800/50 bg-[#0A0F1A]/80 px-6 pb-4 backdrop-blur-xl">
+        className="flex-row items-center justify-between border-b border-gray-800/50 bg-gray-900/80 px-6 pb-4 backdrop-blur-xl">
         <TouchableOpacity
           onPress={() => navigation.openDrawer()}
           className="rounded-2xl border border-gray-700/50 bg-gray-800/40 p-2.5">
@@ -138,7 +138,7 @@ export default function HomeScreen({ navigation }: any) {
           <TouchableOpacity
             onPress={() => navigation.navigate('ReportCrime')}
             activeOpacity={0.8}
-            className="bg-[#121A16] border border-emerald-900/30 rounded-[35px] p-5 flex-row items-center shadow-xl"
+            className="bg-gray-900 border border-emerald-900/30 rounded-[35px] p-5 flex-row items-center shadow-xl"
           >
             <View className="bg-emerald-500/10 h-14 w-14 rounded-2xl items-center justify-center border border-emerald-500/20">
               <Ionicons name="warning" size={28} color="#10B981" />
@@ -155,7 +155,7 @@ export default function HomeScreen({ navigation }: any) {
 
         {/* LIVE SAFETY WIDGETS */}
         <View className="mt-6 px-6 flex-row justify-between">
-            <View className="w-[48%] bg-[#0D1321] border border-gray-800/60 rounded-3xl p-4">
+            <View className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-3xl p-4">
                 <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">Area Risk</Text>
                 <View className="flex-row items-end">
                     <Text className="text-emerald-400 text-3xl font-black">LOW</Text>
@@ -166,7 +166,7 @@ export default function HomeScreen({ navigation }: any) {
                 </View>
             </View>
 
-            <View className="w-[48%] bg-[#0D1321] border border-gray-800/60 rounded-3xl p-4">
+            <View className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-3xl p-4">
                 <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">Network</Text>
                 <View className="flex-row items-end">
                     <Text className="text-blue-400 text-3xl font-black">100%</Text>
@@ -183,7 +183,7 @@ export default function HomeScreen({ navigation }: any) {
           </View>
           
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }}>
-            <TouchableOpacity onPress={() => navigation.navigate('Chatbot')} className="w-36 h-40 bg-[#0D1321] border border-gray-800/60 rounded-[30px] p-5 justify-between shadow-lg">
+            <TouchableOpacity onPress={() => navigation.navigate('Chatbot')} className="w-36 h-40 bg-gray-900 border border-gray-800/60 rounded-[30px] p-5 justify-between shadow-lg">
               <Ionicons name="hardware-chip" size={24} color="#10B981" />
               <View>
                 <Text className="text-white font-black text-lg">Assistant</Text>
@@ -191,7 +191,7 @@ export default function HomeScreen({ navigation }: any) {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('Map')} className="w-36 h-40 bg-[#0D1321] border border-gray-800/60 rounded-[30px] p-5 justify-between shadow-lg">
+            <TouchableOpacity onPress={() => navigation.navigate('Map')} className="w-36 h-40 bg-gray-900 border border-gray-800/60 rounded-[30px] p-5 justify-between shadow-lg">
               <Ionicons name="navigate-outline" size={24} color="#3B82F6" />
               <View>
                 <Text className="text-white font-black text-lg">Live Map</Text>
@@ -199,7 +199,7 @@ export default function HomeScreen({ navigation }: any) {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('AIScanner')} className="w-36 h-40 bg-[#0D1321] border border-gray-800/60 rounded-[30px] p-5 justify-between shadow-lg">
+            <TouchableOpacity onPress={() => navigation.navigate('AIScanner')} className="w-36 h-40 bg-gray-900 border border-gray-800/60 rounded-[30px] p-5 justify-between shadow-lg">
               <Ionicons name="scan" size={24} color="#A855F7" />
               <View>
                 <Text className="text-white font-black text-lg">Scanner</Text>
@@ -214,22 +214,22 @@ export default function HomeScreen({ navigation }: any) {
           <Text className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-4">Features</Text>
           
           <View className="flex-row flex-wrap justify-between">
-            <TouchableOpacity onPress={() => navigation.navigate('SafeWalk')} className="w-[48%] bg-[#0D1321] border border-gray-800/60 rounded-[25px] p-5 mb-4 flex-row items-center">
+            <TouchableOpacity onPress={() => navigation.navigate('SafeWalk')} className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-[25px] p-5 mb-4 flex-row items-center">
               <Ionicons name="walk" size={18} color="#818CF8" />
               <Text className="text-white font-bold ml-3 text-xs uppercase tracking-widest">SafeWalk</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('IntelHub')} className="w-[48%] bg-[#0D1321] border border-gray-800/60 rounded-[25px] p-5 mb-4 flex-row items-center">
+            <TouchableOpacity onPress={() => navigation.navigate('IntelHub')} className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-[25px] p-5 mb-4 flex-row items-center">
               <Ionicons name="people" size={18} color="#F472B6" />
               <Text className="text-white font-bold ml-3 text-xs uppercase tracking-widest">Community</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('MyReports')} className="w-[48%] bg-[#0D1321] border border-gray-800/60 rounded-[25px] p-5 mb-4 flex-row items-center">
+            <TouchableOpacity onPress={() => navigation.navigate('MyReports')} className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-[25px] p-5 mb-4 flex-row items-center">
               <Ionicons name="folder" size={18} color="#F59E0B" />
               <Text className="text-white font-bold ml-3 text-xs uppercase tracking-widest">My Reports</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('SafetyAdvisory')} className="w-[48%] bg-[#0D1321] border border-gray-800/60 rounded-[25px] p-5 mb-4 flex-row items-center">
+            <TouchableOpacity onPress={() => navigation.navigate('SafetyAdvisory')} className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-[25px] p-5 mb-4 flex-row items-center">
               <Ionicons name="bulb" size={18} color="#10B981" />
               <Text className="text-white font-bold ml-3 text-xs uppercase tracking-widest">Advisory</Text>
             </TouchableOpacity>
