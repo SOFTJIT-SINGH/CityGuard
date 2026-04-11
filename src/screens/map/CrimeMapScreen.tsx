@@ -26,10 +26,18 @@ export default function CrimeMapScreen() {
 
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') return;
-      let currentLocation = await Location.getCurrentPositionAsync({});
-      setLocation(currentLocation);
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          setLocation({ coords: { latitude: 31.6340, longitude: 74.8723 } } as any);
+          return;
+        }
+        let currentLocation = await Location.getCurrentPositionAsync({});
+        setLocation(currentLocation);
+      } catch (e) {
+        // Fallback for emulator hanging or location services disabled
+        setLocation({ coords: { latitude: 31.6340, longitude: 74.8723 } } as any);
+      }
     })();
   }, []);
 
@@ -45,7 +53,7 @@ export default function CrimeMapScreen() {
   return (
     <View className="flex-1 bg-gray-950">
       <MapView
-        className="w-full h-full"
+        style={{ flex: 1, width: '100%', height: '100%' }}
         showsUserLocation={true}
         showsMyLocationButton={true}
         customMapStyle={darkMapStyle}
