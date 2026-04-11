@@ -8,7 +8,7 @@ export default function ChatbotScreen() {
   const insets = useSafeAreaInsets();
   const [inputText, setInputText] = useState('');
   const [messages, setMessages] = useState([
-    { id: '1', text: "CITYGUARD AI INTEL ONLINE. Awaiting query...", sender: 'bot' }
+    { id: '1', text: "CityGuard AI Online. How can I assist you?", sender: 'bot' }
   ]);
 
   const sendMessage = async () => {
@@ -38,7 +38,7 @@ export default function ChatbotScreen() {
           <View className="bg-emerald-500/10 p-2 rounded-full mr-3 border border-emerald-500/20">
             <Ionicons name="hardware-chip" size={24} color="#10B981" />
           </View>
-          <Text className="text-xl font-black text-white tracking-tight">AI Intel</Text>
+          <Text className="text-xl font-black text-white tracking-tight">CityGuard AI</Text>
         </View>
 
         <ScrollView className="flex-1 px-4 py-4" contentContainerStyle={{ paddingBottom: 20 }}>

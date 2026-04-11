@@ -42,7 +42,7 @@ export default function EditProfileScreen({ navigation }: any) {
 
   const handleUpdate = async () => {
     if (!fullName) {
-      Alert.alert('Validation Error', 'Operative Name cannot be empty.');
+      Alert.alert('Validation Error', 'Full Name cannot be empty.');
       return;
     }
 
@@ -89,11 +89,11 @@ export default function EditProfileScreen({ navigation }: any) {
           <Text className="text-emerald-500 font-bold ml-2 uppercase tracking-widest text-xs">Return</Text>
         </TouchableOpacity>
 
-        <Text className="text-3xl font-black text-white tracking-tight mb-8">Edit Dossier</Text>
+        <Text className="text-3xl font-black text-white tracking-tight mb-8">Edit Profile</Text>
 
         <View className="space-y-4 mb-8">
           <View>
-            <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">Operative Name</Text>
+            <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">Full Name</Text>
             <TextInput 
               value={fullName}
               onChangeText={setFullName}
@@ -111,7 +111,7 @@ export default function EditProfileScreen({ navigation }: any) {
           </View>
 
           <View className="mt-4">
-            <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">I.C.E. Contact Number</Text>
+            <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">Emergency Contact Number</Text>
             <TextInput 
               value={iceContact}
               onChangeText={setIceContact}

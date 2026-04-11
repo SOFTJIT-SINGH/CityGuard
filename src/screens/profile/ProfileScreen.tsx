@@ -50,7 +50,7 @@ const fetchProfile = async () => {
 
   // Fallback if no user is found
   const displayData = userData || {
-    full_name: 'Unknown Operative',
+    full_name: 'Unknown User',
     operative_id: 'PENDING',
     blood_type: 'N/A',
     ice_contact: 'N/A'
@@ -82,7 +82,7 @@ const fetchProfile = async () => {
           </View>
           <View className="h-12 w-[1px] bg-gray-800"></View>
           <View>
-            <Text className="mb-1 text-xs font-bold uppercase tracking-widest text-gray-500">ICE Contact</Text>
+            <Text className="mb-1 text-xs font-bold uppercase tracking-widest text-gray-500">Emergency Contact</Text>
             <Text className="font-mono text-lg font-bold text-white">{displayData.ice_contact}</Text>
           </View>
         </View>
@@ -91,18 +91,18 @@ const fetchProfile = async () => {
       {/* Settings Options */}
       <View className="mb-10 mt-8 space-y-4 px-6">
         <Text className="mb-2 px-1 text-xs font-bold uppercase tracking-widest text-gray-500">
-          System Preferences
+          Settings
         </Text>
 
         {[
           {
             icon: 'shield-checkmark',
             color: '#10B981',
-            label: 'Edit Security Profile',
+            label: 'Edit Profile',
             action: () => navigation.navigate('EditProfile'),
           },
-          { icon: 'notifications', color: '#3B82F6', label: 'Alert Preferences' },
-          { icon: 'location', color: '#F59E0B', label: 'Tracking Protocols' },
+          { icon: 'notifications', color: '#3B82F6', label: 'Notification Settings' },
+          { icon: 'location', color: '#F59E0B', label: 'Location Services' },
         ].map((item, idx) => (
           <TouchableOpacity
             key={idx}
@@ -129,7 +129,7 @@ const fetchProfile = async () => {
         <TouchableOpacity className="mt-4 flex-row items-center justify-center rounded-2xl border border-red-500/30 bg-red-500/10 p-4">
           <Ionicons name="power" size={20} color="#EF4444" />
           <Text className="ml-2 text-base font-black uppercase tracking-widest text-red-500">
-            Terminate Session
+            Log Out
           </Text>
         </TouchableOpacity>
       </View>

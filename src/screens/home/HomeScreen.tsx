@@ -35,7 +35,7 @@ export default function HomeScreen({ navigation }: any) {
 
           if (data) {
             setUserData({
-              full_name: data.full_name || 'Operative',
+              full_name: data.full_name || 'User',
               operative_id: data.operative_id || 'UNKNOWN',
             });
           }
@@ -153,7 +153,7 @@ export default function HomeScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
 
-        {/* LIVE INTEL WIDGETS */}
+        {/* LIVE SAFETY WIDGETS */}
         <View className="mt-6 px-6 flex-row justify-between">
             <View className="w-[48%] bg-[#0D1321] border border-gray-800/60 rounded-3xl p-4">
                 <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">Area Risk</Text>
@@ -176,7 +176,7 @@ export default function HomeScreen({ navigation }: any) {
             </View>
         </View>
 
-        {/* HORIZONTAL NEURAL CORE */}
+        {/* HORIZONTAL TOOLS CORE */}
         <View className="mt-8">
           <View className="px-6 mb-4 flex-row justify-between items-end">
             <Text className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Safety Tools</Text>
@@ -209,7 +209,7 @@ export default function HomeScreen({ navigation }: any) {
           </ScrollView>
         </View>
 
-        {/* OPERATIONS GRID */}
+        {/* FEATURES GRID */}
         <View className="mt-8 px-6">
           <Text className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-4">Features</Text>
           

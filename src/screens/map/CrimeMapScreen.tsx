@@ -74,8 +74,8 @@ export default function CrimeMapScreen() {
 
       <View className="absolute top-12 left-4 right-4 bg-gray-900/90 p-4 rounded-2xl shadow-lg border border-gray-800 backdrop-blur-md flex-row items-center justify-between">
         <View>
-          <Text className="text-xl font-black text-white tracking-tight">Live Radar</Text>
-          <Text className="text-[10px] uppercase font-bold text-gray-400 mt-1 tracking-widest">Active Scanning</Text>
+          <Text className="text-xl font-black text-white tracking-tight">Live Map</Text>
+          <Text className="text-[10px] uppercase font-bold text-gray-400 mt-1 tracking-widest">Updating...</Text>
         </View>
         <View className="h-3 w-3 rounded-full bg-emerald-500 animate-pulse border-2 border-emerald-900" />
       </View>

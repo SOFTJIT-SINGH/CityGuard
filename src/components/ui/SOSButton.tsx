@@ -78,7 +78,7 @@ export default function SOSModal({ visible, countdown, cancel }: SOSModalProps) 
           </View>
 
           <Text className="text-gray-500 text-center text-xs font-medium leading-relaxed px-2 mb-10">
-            Secure GPS coordinates being sent to <Text className="text-gray-300 font-bold">Local Dispatch & Nearby Operatives</Text>.
+            Secure GPS coordinates being sent to <Text className="text-gray-300 font-bold">Local Dispatch & Emergency Contacts</Text>.
           </Text>
 
           <TouchableOpacity 
