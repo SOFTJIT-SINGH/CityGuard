@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,11 +19,9 @@ export default function ProfileScreen({ navigation }: any) {
 
 const fetchProfile = async () => {
     try {
-      // Get the currently logged-in user
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
-        // Fetch their specific row from the profiles table
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
@@ -41,14 +39,12 @@ const fetchProfile = async () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    // Your navigation will automatically handle routing back to Auth if set up right
   };
 
   if (loading) {
     return <View className="flex-1 bg-gray-950 items-center justify-center"><ActivityIndicator color="#10B981" /></View>;
   }
 
-  // Fallback if no user is found
   const displayData = userData || {
     full_name: 'Unknown User',
     operative_id: 'PENDING',
@@ -73,7 +69,6 @@ const fetchProfile = async () => {
         <Text className="mt-1 font-mono text-sm tracking-widest text-emerald-400">ID: {displayData.operative_id}</Text>
       </View>
 
-      {/* Emergency Info Card */}
       <View className="-mt-6 px-6">
         <View className="flex-row items-center justify-between rounded-3xl border border-gray-800 bg-gray-900 p-6 shadow-lg">
           <View>
@@ -88,7 +83,6 @@ const fetchProfile = async () => {
         </View>
       </View>
 
-      {/* Settings Options */}
       <View className="mb-10 mt-8 space-y-4 px-6">
         <Text className="mb-2 px-1 text-xs font-bold uppercase tracking-widest text-gray-500">
           Settings
@@ -101,13 +95,22 @@ const fetchProfile = async () => {
             label: 'Edit Profile',
             action: () => navigation.navigate('EditProfile'),
           },
-          { icon: 'notifications', color: '#3B82F6', label: 'Notification Settings' },
-          { icon: 'location', color: '#F59E0B', label: 'Location Services' },
+          { 
+            icon: 'notifications', 
+            color: '#3B82F6', 
+            label: 'Notification Settings',
+            action: () => Linking.openSettings() 
+          },
+          { 
+            icon: 'location', 
+            color: '#F59E0B', 
+            label: 'Location Services',
+            action: () => Linking.openSettings() 
+          },
         ].map((item, idx) => (
           <TouchableOpacity
             key={idx}
-            // THIS IS THE MAGIC LINE THAT WAS MISSING:
-            onPress={item.action ? item.action : () => console.log('Button Pressed')}
+            onPress={item.action}
             className="mb-3 flex-row items-center justify-between rounded-2xl border border-gray-800 bg-gray-900 p-4 shadow-sm">
             <View className="flex-row items-center">
               <View

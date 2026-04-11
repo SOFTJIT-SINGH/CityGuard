@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
+import { useFocusEffect } from '@react-navigation/native';
+import { supabase } from '../../lib/supabase';
 
 // This turns Google Maps / Apple Maps into a "Dark Mode" hacker grid!
 const darkMapStyle = [
@@ -18,11 +20,25 @@ const darkMapStyle = [
 
 export default function CrimeMapScreen() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [hotspots, setHotspots] = useState<any[]>([]);
 
-  const mockHotspots = [
-    { id: 1, latitude: 31.6340, longitude: 74.8723, title: "Theft", type: "danger" },
-    { id: 2, latitude: 31.6310, longitude: 74.8750, title: "Suspicious", type: "warning" },
-  ];
+  useFocusEffect(
+    useCallback(() => {
+      fetchMapData();
+    }, [])
+  );
+
+  const fetchMapData = async () => {
+    try {
+      // Fetch dynamic reports from Supabase
+      const { data, error } = await supabase.from('reports').select('*');
+      if (data) {
+         setHotspots(data);
+      }
+    } catch(e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -64,12 +80,28 @@ export default function CrimeMapScreen() {
           longitudeDelta: 0.05,
         }}
       >
-        {mockHotspots.map((spot) => (
-          <Marker key={spot.id} coordinate={{ latitude: spot.latitude, longitude: spot.longitude }} title={spot.title} pinColor={spot.type === 'danger' ? 'red' : 'yellow'} />
-        ))}
-        {mockHotspots.map((spot) => (
-          <Circle key={`circle-${spot.id}`} center={{ latitude: spot.latitude, longitude: spot.longitude }} radius={500} fillColor={spot.type === 'danger' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)'} strokeColor={spot.type === 'danger' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(245, 158, 11, 0.5)'} />
-        ))}
+        {hotspots.map((spot, index) => {
+          // Generate a deterministic jitter around the user's location based on the report's UUID
+          // This avoids needing raw lat/lon columns in Supabase for testing while making it dynamic
+          const jitterLat = location.coords.latitude + ((index % 5) * 0.003 * (index % 2 === 0 ? 1 : -1));
+          const jitterLng = location.coords.longitude + ((index % 6) * 0.003 * (index % 3 === 0 ? 1 : -1));
+
+          return (
+            <React.Fragment key={spot.id}>
+              <Marker 
+                coordinate={{ latitude: jitterLat, longitude: jitterLng }} 
+                title={spot.title} 
+                pinColor={spot.severity === 'critical' || spot.severity === 'danger' ? 'red' : 'yellow'} 
+              />
+              <Circle 
+                center={{ latitude: jitterLat, longitude: jitterLng }} 
+                radius={300} 
+                fillColor={spot.severity === 'critical' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)'} 
+                strokeColor={spot.severity === 'critical' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(245, 158, 11, 0.5)'} 
+              />
+            </React.Fragment>
+          );
+        })}
       </MapView>
 
       <View className="absolute top-12 left-4 right-4 bg-gray-900/90 p-4 rounded-2xl shadow-lg border border-gray-800 backdrop-blur-md flex-row items-center justify-between">

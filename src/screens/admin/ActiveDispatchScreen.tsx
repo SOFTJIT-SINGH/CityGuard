@@ -1,25 +1,65 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { supabase } from '../../lib/supabase';
+import dayjs from 'dayjs';
 
 export default function ActiveDispatchScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const [filter, setFilter] = useState('pending');
+  const [dispatchLogs, setDispatchLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [dispatchLogs, setDispatchLogs] = useState([
-    { id: "INC-994-RED", title: "Armed Robbery in Progress", location: "Sector 17, Main Market", time: "2 min ago", severity: "critical", status: "pending" },
-    { id: "INC-882-AMB", title: "Suspicious Vehicle", location: "Bus Stand, Gate 3", time: "14 min ago", severity: "warning", status: "investigating" },
-    { id: "INC-771-GRN", title: "Noise Complaint", location: "Mall Road, Block B", time: "1 hr ago", severity: "info", status: "resolved" },
-    { id: "INC-995-RED", title: "SOS Beacon Activated", location: "GT Road Highway", time: "Just Now", severity: "critical", status: "pending" },
-  ]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchDispatchLogs();
+    }, [])
+  );
 
-  const updateStatus = (id: string, newStatus: string) => {
-    setDispatchLogs(dispatchLogs.map(log => log.id === id ? { ...log, status: newStatus } : log));
-    Alert.alert("System Updated", `Incident ${id} status changed to ${newStatus.toUpperCase()}.`);
+  const fetchDispatchLogs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('dispatch_logs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (data) {
+        setDispatchLogs(data);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateStatus = async (id: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('dispatch_logs')
+        .update({ status: newStatus, updated_at: new Date() })
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      setDispatchLogs(dispatchLogs.map(log => log.id === id ? { ...log, status: newStatus } : log));
+      Alert.alert("System Updated", `Incident status changed to ${newStatus.toUpperCase()}.`);
+    } catch (e: any) {
+      Alert.alert("Error", e.message);
+    }
   };
 
   const filteredLogs = dispatchLogs.filter(log => filter === 'all' || log.status === filter);
+
+  if (loading) {
+    return (
+      <View className="flex-1 bg-gray-950 items-center justify-center">
+        <ActivityIndicator color="#3B82F6" size="large" />
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-gray-950" style={{ paddingTop: Math.max(insets.top, 20) + 12 }}>
@@ -81,7 +121,7 @@ export default function ActiveDispatchScreen({ navigation }: any) {
 
             {/* Log Meta */}
             <View className="flex-row justify-between items-center mb-4 border-b border-gray-800 pb-3">
-              <Text className="text-gray-500 text-xs font-mono">{log.id} • {log.time}</Text>
+              <Text className="text-gray-500 text-xs font-mono">{log.incident_tag} • {dayjs(log.created_at).format('MMM D, HH:mm')}</Text>
               <Text className={`text-xs font-bold uppercase tracking-widest ${
                 log.status === 'pending' ? 'text-red-400 animate-pulse' : 
                 log.status === 'investigating' ? 'text-amber-400' : 'text-emerald-400'
