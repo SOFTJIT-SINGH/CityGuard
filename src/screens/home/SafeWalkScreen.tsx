@@ -29,10 +29,19 @@ export default function SafeWalkScreen({ navigation }: any) {
 
   const toggleProtocol = () => {
     if (isActive) {
-      Alert.prompt("Disarm Protocol", "Enter your 4-digit security PIN to cancel.", [
-        { text: "Cancel", style: "cancel" },
-        { text: "Disarm", onPress: () => { setIsActive(false); setTimeLeft(900); } }
-      ], 'secure-text');
+      // CROSS-PLATFORM FIX: Standard alert instead of iOS-only prompt
+      Alert.alert(
+        "Disarm Protocol", 
+        "Are you sure you want to abort the SafeWalk escort?", 
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Yes, Disarm", onPress: () => { 
+            setIsActive(false); 
+            setTimeLeft(900); 
+            Alert.alert("Disarmed", "Escort protocol terminated.");
+          }}
+        ]
+      );
     } else {
       setIsActive(true);
     }

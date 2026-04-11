@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import TabNavigator from './TabNavigator';
 import AnalyticsScreen from '../screens/admin/AnalyticsScreen';
-import CCTVScreen from '../screens/admin/CCTVScreen';
+
 import AIScannerScreen from '../screens/admin/AIScannerScreen';
 import ActiveDispatchScreen from '../screens/admin/ActiveDispatchScreen';
 // 1. IMPORT SOCIAL MONITOR
@@ -35,7 +35,7 @@ export default function MainNavigator() {
         name="HomeTabs"
         component={TabNavigator}
         options={{
-          title: 'System Core',
+          title: 'Home Settings',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="terminal-outline" size={size} color={color} />
           ),
@@ -45,7 +45,7 @@ export default function MainNavigator() {
         name="SafeWalk"
         component={SafeWalkScreen}
         options={{
-          title: 'SafeWalk Escort',
+          title: 'SafeWalk',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="shield-checkmark-outline" size={size} color={color} />
           ),
@@ -55,7 +55,7 @@ export default function MainNavigator() {
         name="IntelHub"
         component={IntelHubScreen}
         options={{
-          title: 'Community Intel Hub',
+          title: 'Community',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="people-outline" size={size} color={color} />
           ),
@@ -65,7 +65,7 @@ export default function MainNavigator() {
         name="MyReports"
         component={MyReportsScreen}
         options={{
-          title: 'My Intel Logs',
+          title: 'My Reports',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="folder-open-outline" size={size} color={color} />
           ),
@@ -76,7 +76,7 @@ export default function MainNavigator() {
         name="ActiveDispatch"
         component={ActiveDispatchScreen}
         options={{
-          title: 'Active Dispatch',
+          title: 'Active Alerts',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="radio-outline" size={size} color={color} />
           ),
@@ -86,7 +86,7 @@ export default function MainNavigator() {
         name="AIScanner"
         component={AIScannerScreen}
         options={{
-          title: 'AI Vision Scanner',
+          title: 'AI Scanner',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="scan-outline" size={size} color={color} />
           ),
@@ -157,16 +157,7 @@ export default function MainNavigator() {
           ),
         }}
       />
-      <Drawer.Screen
-        name="CCTV"
-        component={CCTVScreen}
-        options={{
-          title: 'Live CCTV Matrix',
-          drawerIcon: ({ color, size }) => (
-            <Ionicons name="videocam-outline" size={size} color={color} />
-          ),
-        }}
-      />
+
     </Drawer.Navigator>
   );
 }

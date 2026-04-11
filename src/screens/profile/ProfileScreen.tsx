@@ -1,59 +1,86 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { supabase } from '../../lib/supabase'; // IMPORT SUPABASE
 
 export default function ProfileScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
 
-  const userData = {
-    name: 'Softjit Singh',
-    id: 'CU-8085-X',
-    emergencyContact: '+91 85284 73685',
-    bloodGroup: 'A+',
+  const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+const fetchProfile = async () => {
+    try {
+      // Get the currently logged-in user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        // Fetch their specific row from the profiles table
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (data) setUserData(data);
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    // Your navigation will automatically handle routing back to Auth if set up right
+  };
+
+  if (loading) {
+    return <View className="flex-1 bg-gray-950 items-center justify-center"><ActivityIndicator color="#10B981" /></View>;
+  }
+
+  // Fallback if no user is found
+  const displayData = userData || {
+    full_name: 'Unknown Operative',
+    operative_id: 'PENDING',
+    blood_type: 'N/A',
+    ice_contact: 'N/A'
   };
 
   return (
     <ScrollView className="flex-1 bg-gray-950" style={{ paddingTop: Math.max(insets.top, 20) }}>
-      {/* Header / Profile Info */}
       <View className="relative items-center rounded-b-[40px] border-b border-gray-800 bg-gray-900 px-6 pb-8 pt-6 shadow-lg">
-        <TouchableOpacity
-          onPress={() => navigation.openDrawer()}
-          className="absolute left-6 top-6 rounded-full border border-gray-700 bg-gray-800 p-2">
+        <TouchableOpacity onPress={() => navigation.openDrawer()} className="absolute left-6 top-6 rounded-full border border-gray-700 bg-gray-800 p-2">
           <Ionicons name="menu" size={24} color="#D1D5DB" />
         </TouchableOpacity>
 
         <View className="mb-4 rounded-full border-2 border-emerald-500 bg-gray-950 p-1 shadow-lg shadow-emerald-500/20">
           <Image
-            source={{
-              uri: 'https://ui-avatars.com/api/?name=Softjit+Singh&background=111827&color=10B981&size=128&bold=true',
-            }}
+            source={{ uri: displayData.avatar_url || `https://ui-avatars.com/api/?name=${displayData.full_name}&background=111827&color=10B981&size=128&bold=true` }}
             className="h-24 w-24 rounded-full"
           />
         </View>
-        <Text className="text-3xl font-black tracking-tight text-white">{userData.name}</Text>
-        <Text className="mt-1 font-mono text-sm tracking-widest text-emerald-400">
-          ID: {userData.id}
-        </Text>
+        <Text className="text-3xl font-black tracking-tight text-white">{displayData.full_name}</Text>
+        <Text className="mt-1 font-mono text-sm tracking-widest text-emerald-400">ID: {displayData.operative_id}</Text>
       </View>
 
       {/* Emergency Info Card */}
       <View className="-mt-6 px-6">
         <View className="flex-row items-center justify-between rounded-3xl border border-gray-800 bg-gray-900 p-6 shadow-lg">
           <View>
-            <Text className="mb-1 text-xs font-bold uppercase tracking-widest text-gray-500">
-              Blood Type
-            </Text>
-            <Text className="text-2xl font-black text-red-500">{userData.bloodGroup}</Text>
+            <Text className="mb-1 text-xs font-bold uppercase tracking-widest text-gray-500">Blood Type</Text>
+            <Text className="text-2xl font-black text-red-500">{displayData.blood_type}</Text>
           </View>
           <View className="h-12 w-[1px] bg-gray-800"></View>
           <View>
-            <Text className="mb-1 text-xs font-bold uppercase tracking-widest text-gray-500">
-              ICE Contact
-            </Text>
-            <Text className="font-mono text-lg font-bold text-white">
-              {userData.emergencyContact}
-            </Text>
+            <Text className="mb-1 text-xs font-bold uppercase tracking-widest text-gray-500">ICE Contact</Text>
+            <Text className="font-mono text-lg font-bold text-white">{displayData.ice_contact}</Text>
           </View>
         </View>
       </View>

@@ -27,7 +27,7 @@ export default function ReportCrimeScreen() {
     setLocation(loc.coords);
   };
 
-  const submitReport = () => { Alert.alert("Intel Uploaded", "Secure transmission successful."); };
+  const submitReport = () => { Alert.alert("Report Submitted", "Your incident report has been securely sent to the authorities."); };
 
   return (
     <KeyboardAvoidingView className="flex-1 bg-gray-950" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -35,14 +35,14 @@ export default function ReportCrimeScreen() {
         
         <View className="mb-6 flex-row items-center justify-between border-b border-gray-800 pb-4 mt-4">
             <View>
-                <Text className="text-2xl font-black text-white tracking-tight">File Report</Text>
-                <Text className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mt-1">Classified Incident Log</Text>
+                <Text className="text-2xl font-black text-white tracking-tight">Report Incident</Text>
+                <Text className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mt-1">Community Safety Log</Text>
             </View>
             <Ionicons name="shield-checkmark" size={28} color="#10B981" />
         </View>
 
-        <TextInput placeholder="Incident Designation (Title)" value={title} onChangeText={setTitle} placeholderTextColor="#6B7280" className="bg-gray-900 border border-gray-800 text-white p-4 rounded-2xl mb-4 font-bold" />
-        <TextInput placeholder="Detailed Observation" multiline numberOfLines={4} value={description} onChangeText={setDescription} placeholderTextColor="#6B7280" className="bg-gray-900 border border-gray-800 text-white p-4 rounded-2xl mb-4 h-32 align-top" />
+        <TextInput placeholder="Incident Title" value={title} onChangeText={setTitle} placeholderTextColor="#6B7280" className="bg-gray-900 border border-gray-800 text-white p-4 rounded-2xl mb-4 font-bold" />
+        <TextInput placeholder="Detailed Description" multiline numberOfLines={4} value={description} onChangeText={setDescription} placeholderTextColor="#6B7280" className="bg-gray-900 border border-gray-800 text-white p-4 rounded-2xl mb-4 h-32 align-top" />
 
         {image && <Image source={{ uri: image }} className="h-48 w-full rounded-2xl mb-4 border border-gray-800 opacity-90" />}
 
@@ -59,13 +59,13 @@ export default function ReportCrimeScreen() {
 
         <TouchableOpacity onPress={getLocation} className="bg-emerald-600/20 border border-emerald-500/30 p-4 rounded-2xl mb-4 flex-row justify-center items-center">
           <Ionicons name="location" size={20} color="#10B981" />
-          <Text className="text-emerald-500 font-bold ml-2">Acquire GPS Coords</Text>
+          <Text className="text-emerald-500 font-bold ml-2">Get Current Location</Text>
         </TouchableOpacity>
 
         {location && <Text className="mb-4 text-gray-500 font-mono text-center text-xs">LAT: {location.latitude.toFixed(4)} | LNG: {location.longitude.toFixed(4)}</Text>}
 
         <TouchableOpacity onPress={submitReport} className="bg-red-600 border border-red-500 p-4 rounded-2xl shadow-lg shadow-red-600/20 mt-4">
-          <Text className="text-center text-white font-black tracking-widest uppercase">Transmit Intel</Text>
+          <Text className="text-center text-white font-black tracking-widest uppercase">Submit Report</Text>
         </TouchableOpacity>
 
       </ScrollView>

@@ -31,7 +31,7 @@ export default function MyReportsScreen({ navigation }: any) {
     },
   ];
 
-  const statusSteps = ["Intel Logged", "AI Verified", "Units Dispatched", "Resolved"];
+  const statusSteps = ["Report Submitted", "Verified", "Authorities Dispatched", "Resolved"];
 
   return (
     <View className="flex-1 bg-gray-950" style={{ paddingTop: Math.max(insets.top, 20) + 12 }}>
@@ -45,13 +45,13 @@ export default function MyReportsScreen({ navigation }: any) {
           <View className="bg-emerald-500/10 p-2 rounded-xl mr-3 border border-emerald-500/20">
             <Ionicons name="folder-open" size={24} color="#10B981" />
           </View>
-          <Text className="text-2xl font-black text-white tracking-tight">My Intel Logs</Text>
+          <Text className="text-2xl font-black text-white tracking-tight">My Reports</Text>
         </View>
       </View>
 
       <View className="px-6 mb-4">
         <Text className="text-gray-400 text-sm leading-relaxed">
-          Track the real-time status of your submitted field reports and AI verification progress.
+          Track the real-time status of your submitted reports.
         </Text>
       </View>
 

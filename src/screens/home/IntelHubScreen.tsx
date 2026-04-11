@@ -33,7 +33,7 @@ export default function IntelHubScreen({ navigation }: any) {
           <View className="bg-purple-500/10 p-2 rounded-xl mr-3 border border-purple-500/20">
             <Ionicons name="people" size={24} color="#A855F7" />
           </View>
-          <Text className="text-2xl font-black text-white tracking-tight">Intel Hub</Text>
+          <Text className="text-2xl font-black text-white tracking-tight">Community</Text>
         </View>
       </View>
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { geminiModel } from '../../lib/gemini';
 
 export default function ChatbotScreen() {
   const insets = useSafeAreaInsets();
@@ -10,15 +11,23 @@ export default function ChatbotScreen() {
     { id: '1', text: "CITYGUARD AI INTEL ONLINE. Awaiting query...", sender: 'bot' }
   ]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!inputText.trim()) return;
     const userMsg = { id: Date.now().toString(), text: inputText, sender: 'user' };
     setMessages(prev => [...prev, userMsg]);
+    const currentInput = inputText;
     setInputText('');
-    setTimeout(() => {
-      const botMsg = { id: (Date.now() + 1).toString(), text: `Processing query: "${userMsg.text}". (Awaiting API Link for full analysis)`, sender: 'bot' };
+    
+    try {
+      const result = await geminiModel.generateContent(currentInput);
+      const text = await result.response.text();
+      const botMsg = { id: (Date.now() + 1).toString(), text: text, sender: 'bot' };
       setMessages(prev => [...prev, botMsg]);
-    }, 1000);
+    } catch (error) {
+      console.error(error);
+      const errorMsg = { id: (Date.now() + 1).toString(), text: "Error connecting to AI. Please try again or check your API key.", sender: 'bot' };
+      setMessages(prev => [...prev, errorMsg]);
+    }
   };
 
   return (

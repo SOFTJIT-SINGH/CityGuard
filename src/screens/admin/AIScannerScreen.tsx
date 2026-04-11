@@ -3,10 +3,12 @@ import { View, Text, TouchableOpacity, Image, ScrollView, ActivityIndicator } fr
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { geminiModel } from '../../lib/gemini';
 
 export default function AIScannerScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const [image, setImage] = useState<string | null>(null);
+  const [imageBase64, setImageBase64] = useState<string | null | undefined>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [results, setResults] = useState<any>(null);
 
@@ -14,29 +16,69 @@ export default function AIScannerScreen({ navigation }: any) {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.8,
+      base64: true,
     });
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      setImageBase64(result.assets[0].base64);
       setResults(null);
     }
   };
 
-  const analyzeImage = () => {
-    if (!image) return;
+  const analyzeImage = async () => {
+    if (!image || !imageBase64) return;
     setIsScanning(true);
     
-    // Simulate AI Processing time
-    setTimeout(() => {
-      setIsScanning(false);
+    try {
+      const promptText = `Analyze this image for any security, safety, or civilian-threat context.
+Return ONLY a raw JSON object (without markdown wrappers like \`\`\`json) with the following structure:
+{
+  "threatLevel": "string (e.g. SECURE, LOW, ELEVATED (74%), SEVERE)",
+  "type": "string (brief description of what is seen)",
+  "confidence": "string (e.g. 89.2%)",
+  "recommendation": "string (action to take for a civilian or dispatcher)",
+  "tags": ["tag1", "tag2", "tag3"]
+}`;
+
+      const apiResult = await geminiModel.generateContent([
+        promptText,
+        {
+          inlineData: {
+            data: imageBase64,
+            mimeType: "image/jpeg"
+          }
+        }
+      ]);
+
+      const responseText = await apiResult.response.text();
+      
+      let parsed = null;
+      try {
+        parsed = JSON.parse(responseText.trim().replace(/```json/g, '').replace(/```/g, ''));
+      } catch (e) {
+        console.error("Failed to parse JSON", responseText);
+        parsed = {
+          threatLevel: "UNKNOWN",
+          type: "AI Output Unstructured",
+          confidence: "0%",
+          recommendation: "Failed to parse AI response. " + responseText.substring(0, 100),
+          tags: ["error"]
+        };
+      }
+      setResults(parsed);
+    } catch (error) {
+      console.error("Vision AI Error:", error);
       setResults({
-        threatLevel: "ELEVATED (74%)",
-        type: "Unattended Object / Suspicious Vehicle",
-        confidence: "89.2%",
-        recommendation: "Dispatch nearest patrol unit for verification. Do not approach.",
-        tags: ["Vehicle", "License Plate Partially Obscured", "Nighttime"]
+        threatLevel: "ERROR",
+        type: "Connection Failure",
+        confidence: "0%",
+        recommendation: "Failed to connect to the AI model. Check your internet connection or API Key.",
+        tags: ["System Error"]
       });
-    }, 2500);
+    } finally {
+      setIsScanning(false);
+    }
   };
 
   return (
