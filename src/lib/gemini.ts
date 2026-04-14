@@ -6,4 +6,4 @@ const geminiApiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY as string;
 const genAI = new GoogleGenerativeAI(geminiApiKey);
 
 // We use 2.5 Flash for speed and multimodal capabilities
-export const geminiModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+export const geminiModel = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
