@@ -67,7 +67,7 @@ export default function MyReportsScreen({ navigation }: any) {
 
       <View className="px-6 mb-4">
         <Text className="text-gray-400 text-sm leading-relaxed">
-          Track the real-time status of your submitted reports.
+          Log of your submitted incidents.
         </Text>
       </View>
 
@@ -76,55 +76,36 @@ export default function MyReportsScreen({ navigation }: any) {
           <View key={index} className="bg-gray-900 border border-gray-800 rounded-3xl p-5 mb-5 shadow-lg">
             
             <View className="flex-row justify-between items-start mb-4 border-b border-gray-800 pb-4">
-              <View>
+              <View className="flex-1 pr-4">
                 <Text className="text-white text-lg font-black tracking-wide">{report.title}</Text>
                 <Text className="text-gray-500 text-xs font-mono mt-1">{dayjs(report.reported_at).format('MMM D, HH:mm [HRS]')}</Text>
               </View>
-              <View className="bg-gray-950 px-2 py-1 rounded-md border border-gray-800">
-                <Text className="text-emerald-400 text-[10px] font-mono tracking-widest">{report.report_tag}</Text>
+              <View className="bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                <Text className="text-emerald-500 text-[9px] font-black tracking-widest uppercase">Submitted</Text>
               </View>
             </View>
 
-            {/* Tactical Timeline Tracker */}
             <View className="mt-2">
-              {statusSteps.map((step, stepIndex) => {
-                const isCompleted = stepIndex < (report.status_level || 1);
-                const isCurrent = stepIndex === (report.status_level || 1) - 1;
-                const isLast = stepIndex === statusSteps.length - 1;
+                <Text className="text-gray-400 font-bold text-[10px] uppercase tracking-widest mb-1">Details</Text>
+                <Text className="text-gray-300 leading-5">{report.description || 'No additional details provided.'}</Text>
+            </View>
 
-                return (
-                  <View key={stepIndex} className="flex-row items-start">
-                    {/* Step Indicator & Line */}
-                    <View className="items-center mr-4">
-                      <View className={`h-4 w-4 rounded-full border-2 ${
-                        isCompleted ? 'bg-emerald-500 border-emerald-400 shadow-lg shadow-emerald-500/50' : 
-                        'bg-gray-900 border-gray-700'
-                      }`} />
-                      {!isLast && (
-                        <View className={`w-0.5 h-8 ${isCompleted && !isCurrent ? 'bg-emerald-500/50' : 'bg-gray-800'}`} />
-                      )}
-                    </View>
-
-                    {/* Step Text */}
-                    <View className="justify-center h-4 mt-[-2px]">
-                      <Text className={`text-xs font-bold uppercase tracking-widest ${
-                        isCurrent ? 'text-emerald-400' : 
-                        isCompleted ? 'text-gray-300' : 'text-gray-600'
-                      }`}>
-                        {step}
-                      </Text>
-                    </View>
-                  </View>
-                );
-              })}
+            <View className="mt-4 pt-4 border-t border-gray-800/50 flex-row items-center">
+                <Ionicons name="finger-print" size={14} color="#10B981" />
+                <Text className="text-gray-600 font-mono text-[9px] ml-2 uppercase">Log ID: {report.id?.split('-')[0] || 'REF-'+index}</Text>
             </View>
 
           </View>
         ))}
         
-        {/* Padding for bottom scroll */}
+        {myReports.length === 0 && (
+            <View className="items-center justify-center py-20 bg-gray-900/40 rounded-3xl border border-dashed border-gray-800">
+                <Ionicons name="documents-outline" size={48} color="#374151" />
+                <Text className="text-gray-500 font-bold mt-4">No reports filed yet.</Text>
+            </View>
+        )}
         <View className="h-10" />
       </ScrollView>
     </View>
   );
-}
+}

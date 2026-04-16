@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
 import SOSModal from '../../components/ui/SOSButton';
+import { Audio } from 'expo-av';
 
 const { width } = Dimensions.get('window');
 
@@ -14,6 +15,8 @@ export default function HomeScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const [showSOS, setShowSOS] = useState(false);
   const [countdown, setCountdown] = useState(5);
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [isAlarmPlaying, setIsAlarmPlaying] = useState(false);
 
   // 1. Dynamic User State
   const [userData, setUserData] = useState({
@@ -78,6 +81,39 @@ export default function HomeScreen({ navigation }: any) {
     }
   };
 
+  async function playAlarm() {
+    try {
+      if (isAlarmPlaying) {
+        await sound?.stopAsync();
+        setIsAlarmPlaying(false);
+        return;
+      }
+
+      console.log('Loading Sound');
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        require('../../../assets/Sound/emergencyalarm.wav'), // Use the local asset
+        { shouldPlay: true, isLooping: true, volume: 1.0 }
+      );
+      setSound(newSound);
+      setIsAlarmPlaying(true);
+
+      console.log('Playing Sound');
+      await newSound.playAsync();
+    } catch (error) {
+      console.error("Error playing sound", error);
+      Alert.alert("Error", "Could not play alarm sound.");
+    }
+  }
+
+  useEffect(() => {
+    return sound
+      ? () => {
+        console.log('Unloading Sound');
+        sound.unloadAsync();
+      }
+      : undefined;
+  }, [sound]);
+
   return (
     <View className="flex-1 bg-gray-950">
       <StatusBar style="light" />
@@ -111,17 +147,23 @@ export default function HomeScreen({ navigation }: any) {
         </TouchableOpacity>
       </View>
 
-      <ScrollView 
+      <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
-        {/* HERO SOS SECTION */}
-        <View className="mt-6 px-6">
+        {/* HERO SOS & BUZZ SECTION */}
+        <View className="mt-6 px-6 space-y-4">
           <TouchableOpacity
             activeOpacity={0.9}
             onPress={triggerSOS}
-            style={{ shadowColor: '#EF4444', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.3, shadowRadius: 20 }}
-            className="bg-[#1A0B0B] border border-red-900/40 rounded-[40px] p-6 flex-row items-center"
+            style={{
+              shadowColor: '#EF4444',
+              shadowOffset: { width: 0, height: 10 },
+              shadowOpacity: 0.3,
+              shadowRadius: 20,
+              elevation: 10
+            }}
+            className="bg-[#1A0B0B] border border-red-900/40 rounded-[40px] p-6 flex-row items-center mb-4"
           >
             <View className="bg-red-600 h-16 w-16 rounded-full items-center justify-center border-4 border-red-400/30 shadow-lg">
               <MaterialCommunityIcons name="shield-alert" size={32} color="white" />
@@ -131,6 +173,30 @@ export default function HomeScreen({ navigation }: any) {
               <Text className="text-red-500/80 text-[10px] font-bold uppercase tracking-widest">Tap to alert authorities</Text>
             </View>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={playAlarm}
+            style={{
+              shadowColor: isAlarmPlaying ? '#F59E0B' : '#6B7280',
+              shadowOffset: { width: 0, height: 10 },
+              shadowOpacity: 0.3,
+              shadowRadius: 20,
+              elevation: 10
+            }}
+            className={`${isAlarmPlaying ? 'bg-amber-900/30 border-amber-500' : 'bg-gray-900 border-gray-800'} border rounded-[40px] p-6 flex-row items-center`}
+          >
+            <View className={`${isAlarmPlaying ? 'bg-amber-500' : 'bg-gray-700'} h-16 w-16 rounded-full items-center justify-center border-4 ${isAlarmPlaying ? 'border-amber-300/30' : 'border-gray-500/30'} shadow-lg`}>
+              <Ionicons name={isAlarmPlaying ? "volume-high" : "volume-mute"} size={32} color="white" />
+            </View>
+            <View className="ml-5 flex-1">
+              <Text className="text-white text-2xl font-black italic tracking-tighter">{isAlarmPlaying ? 'STOP ALARM' : 'BUZZ ALARM'}</Text>
+              <Text className={`${isAlarmPlaying ? 'text-amber-500' : 'text-gray-500'} text-[10px] font-bold uppercase tracking-widest`}>
+                {isAlarmPlaying ? 'Sounding Extreme Alarm...' : 'Trigger loud deterrent sound'}
+              </Text>
+            </View>
+            {isAlarmPlaying && <View className="h-4 w-4 rounded-full bg-amber-500 animate-pulse" />}
+          </TouchableOpacity>
         </View>
 
         {/* PRIMARY ACTION: REPORT CRIME */}
@@ -138,50 +204,73 @@ export default function HomeScreen({ navigation }: any) {
           <TouchableOpacity
             onPress={() => navigation.navigate('ReportCrime')}
             activeOpacity={0.8}
-            className="bg-gray-900 border border-emerald-900/30 rounded-[35px] p-5 flex-row items-center shadow-xl"
+            className="bg-emerald-600/10 border border-emerald-500/30 rounded-[35px] p-5 flex-row items-center shadow-xl"
           >
-            <View className="bg-emerald-500/10 h-14 w-14 rounded-2xl items-center justify-center border border-emerald-500/20">
-              <Ionicons name="warning" size={28} color="#10B981" />
+            <View className="bg-emerald-500 h-14 w-14 rounded-2xl items-center justify-center border border-emerald-400">
+              <Ionicons name="warning" size={28} color="white" />
             </View>
             <View className="ml-5 flex-1">
               <Text className="text-white text-xl font-black tracking-tight">REPORT INCIDENT</Text>
-              <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Help keep the community safe</Text>
+              <Text className="text-emerald-500/70 text-[10px] font-bold uppercase tracking-widest">Direct link to authorities</Text>
             </View>
-            <View className="bg-emerald-500/20 px-2 py-1 rounded-md">
-              <Text className="text-emerald-400 font-mono text-[9px] font-bold">LIVE</Text>
+            <Ionicons name="chevron-forward" size={20} color="#10B981" />
+          </TouchableOpacity>
+        </View>
+
+        {/* SECONARY ACTIONS: POLICE & FEEDBACK */}
+        <View className="mt-6 px-6 flex-row justify-between">
+          <TouchableOpacity
+            onPress={() => navigation.navigate('PoliceStations')}
+            className="w-[48%] bg-gray-900 border border-blue-900/30 rounded-[30px] p-5"
+          >
+            <View className="bg-blue-500/10 h-10 w-10 rounded-xl items-center justify-center border border-blue-500/20 mb-3">
+              <Ionicons name="location" size={20} color="#3B82F6" />
             </View>
+            <Text className="text-white font-black tracking-tight">POLICE</Text>
+            <Text className="text-gray-500 text-[9px] uppercase font-bold tracking-widest">Nearby Help</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Feedback')}
+            className="w-[48%] bg-gray-900 border border-purple-900/30 rounded-[30px] p-5"
+          >
+            <View className="bg-purple-500/10 h-10 w-10 rounded-xl items-center justify-center border border-purple-500/20 mb-3">
+              <Ionicons name="chatbubbles" size={20} color="#A855F7" />
+            </View>
+            <Text className="text-white font-black tracking-tight">FEEDBACK</Text>
+            <Text className="text-gray-500 text-[9px] uppercase font-bold tracking-widest">Share Voice</Text>
           </TouchableOpacity>
         </View>
 
         {/* LIVE SAFETY WIDGETS */}
         <View className="mt-6 px-6 flex-row justify-between">
-            <View className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-3xl p-4">
-                <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">Area Risk</Text>
-                <View className="flex-row items-end">
-                    <Text className="text-emerald-400 text-3xl font-black">LOW</Text>
-                    <Text className="text-gray-600 text-[10px] font-bold ml-2 mb-1">STABLE</Text>
-                </View>
-                <View className="h-1.5 w-full bg-gray-800 rounded-full mt-3 overflow-hidden">
-                    <View className="h-full w-1/4 bg-emerald-500" />
-                </View>
+          <View className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-3xl p-4">
+            <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">Area Risk</Text>
+            <View className="flex-row items-end">
+              <Text className="text-emerald-400 text-3xl font-black">LOW</Text>
+              <Text className="text-gray-600 text-[10px] font-bold ml-2 mb-1">STABLE</Text>
             </View>
+            <View className="h-1.5 w-full bg-gray-800 rounded-full mt-3 overflow-hidden">
+              <View className="h-full w-1/4 bg-emerald-500" />
+            </View>
+          </View>
 
-            <View className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-3xl p-4">
-                <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">Network</Text>
-                <View className="flex-row items-end">
-                    <Text className="text-blue-400 text-3xl font-black">100%</Text>
-                    <Ionicons name="wifi" size={14} color="#3B82F6" style={{ marginBottom: 4, marginLeft: 6 }} />
-                </View>
-                <Text className="text-gray-500 text-[9px] mt-2 font-mono uppercase">Status: Connected</Text>
+          <View className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-3xl p-4">
+            <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">Network</Text>
+            <View className="flex-row items-end">
+              <Text className="text-blue-400 text-3xl font-black">100%</Text>
+              <Ionicons name="wifi" size={14} color="#3B82F6" style={{ marginBottom: 4, marginLeft: 6 }} />
             </View>
+            <Text className="text-gray-500 text-[9px] mt-2 font-mono uppercase">Status: Connected</Text>
+          </View>
         </View>
 
         {/* HORIZONTAL TOOLS CORE */}
         <View className="mt-8">
           <View className="px-6 mb-4 flex-row justify-between items-end">
-            <Text className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Safety Tools</Text>
+            <Text className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Safety Ecosystem</Text>
           </View>
-          
+
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }}>
             <TouchableOpacity onPress={() => navigation.navigate('Chatbot')} className="w-36 h-40 bg-gray-900 border border-gray-800/60 rounded-[30px] p-5 justify-between shadow-lg">
               <Ionicons name="hardware-chip" size={24} color="#10B981" />
@@ -209,39 +298,12 @@ export default function HomeScreen({ navigation }: any) {
           </ScrollView>
         </View>
 
-        {/* FEATURES GRID */}
-        <View className="mt-8 px-6">
-          <Text className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mb-4">Features</Text>
-          
-          <View className="flex-row flex-wrap justify-between">
-            <TouchableOpacity onPress={() => navigation.navigate('SafeWalk')} className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-[25px] p-5 mb-4 flex-row items-center">
-              <Ionicons name="walk" size={18} color="#818CF8" />
-              <Text className="text-white font-bold ml-3 text-xs uppercase tracking-widest">SafeWalk</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate('IntelHub')} className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-[25px] p-5 mb-4 flex-row items-center">
-              <Ionicons name="people" size={18} color="#F472B6" />
-              <Text className="text-white font-bold ml-3 text-xs uppercase tracking-widest">Community</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate('MyReports')} className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-[25px] p-5 mb-4 flex-row items-center">
-              <Ionicons name="folder" size={18} color="#F59E0B" />
-              <Text className="text-white font-bold ml-3 text-xs uppercase tracking-widest">My Reports</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate('SafetyAdvisory')} className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-[25px] p-5 mb-4 flex-row items-center">
-              <Ionicons name="bulb" size={18} color="#10B981" />
-              <Text className="text-white font-bold ml-3 text-xs uppercase tracking-widest">Advisory</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
         {/* STATUS BAR FOOTER */}
-        <View className="mx-6 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl flex-row items-center">
-            <View className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse mr-3" />
-            <Text className="text-emerald-500/60 font-mono text-[9px] uppercase tracking-[2px]">
-                Secure Connection Active // User ID: {userData.operative_id}
-            </Text>
+        <View className="mx-6 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl flex-row items-center mt-8">
+          <View className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse mr-3" />
+          <Text className="text-emerald-500/60 font-mono text-[9px] uppercase tracking-[2px]">
+            Secure Connection Active // User ID: {userData.operative_id}
+          </Text>
         </View>
       </ScrollView>
 

@@ -5,17 +5,13 @@ import * as Location from 'expo-location';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../lib/supabase';
 
-// This turns Google Maps / Apple Maps into a "Dark Mode" hacker grid!
+// Tactical Dark Grid Style
 const darkMapStyle = [
-  { elementType: "geometry", stylers: [{ color: "#212121" }] },
-  { elementType: "labels.icon", stylers: [{ visibility: "off" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#757575" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#212121" }] },
-  { featureType: "administrative", elementType: "geometry", stylers: [{ color: "#757575" }] },
-  { featureType: "poi", elementType: "geometry", stylers: [{ color: "#181818" }] },
-  { featureType: "road", elementType: "geometry.fill", stylers: [{ color: "#2c2c2c" }] },
-  { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#8a8a8a" }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#000000" }] },
+  { elementType: "geometry", stylers: [{ color: "#0F172A" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#475569" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#1E293B" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#020617" }] },
+  { featureType: "poi", stylers: [{ visibility: "off" }] }
 ];
 
 export default function CrimeMapScreen() {
@@ -30,11 +26,8 @@ export default function CrimeMapScreen() {
 
   const fetchMapData = async () => {
     try {
-      // Fetch dynamic reports from Supabase
       const { data, error } = await supabase.from('reports').select('*');
-      if (data) {
-         setHotspots(data);
-      }
+      if (data) setHotspots(data);
     } catch(e) {
       console.error(e);
     }
@@ -51,7 +44,6 @@ export default function CrimeMapScreen() {
         let currentLocation = await Location.getCurrentPositionAsync({});
         setLocation(currentLocation);
       } catch (e) {
-        // Fallback for emulator hanging or location services disabled
         setLocation({ coords: { latitude: 31.6340, longitude: 74.8723 } } as any);
       }
     })();
@@ -81,24 +73,39 @@ export default function CrimeMapScreen() {
         }}
       >
         {hotspots.map((spot, index) => {
-          // Generate a deterministic jitter around the user's location based on the report's UUID
-          // This avoids needing raw lat/lon columns in Supabase for testing while making it dynamic
           const jitterLat = location.coords.latitude + ((index % 5) * 0.003 * (index % 2 === 0 ? 1 : -1));
           const jitterLng = location.coords.longitude + ((index % 6) * 0.003 * (index % 3 === 0 ? 1 : -1));
+          const isCritical = spot.severity === 'critical';
 
           return (
             <React.Fragment key={spot.id}>
-              <Marker 
-                coordinate={{ latitude: jitterLat, longitude: jitterLng }} 
-                title={spot.title} 
-                pinColor={spot.severity === 'critical' || spot.severity === 'danger' ? 'red' : 'yellow'} 
+              {/* CROSS-PLATFORM HEAT EFFECT (Layered Circles) */}
+              <Circle 
+                center={{ latitude: jitterLat, longitude: jitterLng }} 
+                radius={800} 
+                fillColor={isCritical ? 'rgba(239, 68, 68, 0.05)' : 'rgba(245, 158, 11, 0.05)'} 
+                strokeColor="transparent"
               />
               <Circle 
                 center={{ latitude: jitterLat, longitude: jitterLng }} 
-                radius={300} 
-                fillColor={spot.severity === 'critical' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)'} 
-                strokeColor={spot.severity === 'critical' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(245, 158, 11, 0.5)'} 
+                radius={500} 
+                fillColor={isCritical ? 'rgba(239, 68, 68, 0.1)' : 'rgba(245, 158, 11, 0.1)'} 
+                strokeColor="transparent"
               />
+              <Circle 
+                center={{ latitude: jitterLat, longitude: jitterLng }} 
+                radius={200} 
+                fillColor={isCritical ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)'} 
+                strokeColor="transparent"
+              />
+
+              <Marker 
+                coordinate={{ latitude: jitterLat, longitude: jitterLng }} 
+                title={spot.title}
+                description={spot.description}
+              >
+                 <View className={`h-4 w-4 rounded-full border-2 border-white ${isCritical ? 'bg-red-500' : 'bg-amber-500'}`} style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.5, shadowRadius: 2 }} />
+              </Marker>
             </React.Fragment>
           );
         })}
@@ -106,11 +113,23 @@ export default function CrimeMapScreen() {
 
       <View className="absolute top-12 left-4 right-4 bg-gray-900/90 p-4 rounded-2xl shadow-lg border border-gray-800 backdrop-blur-md flex-row items-center justify-between">
         <View>
-          <Text className="text-xl font-black text-white tracking-tight">Live Map</Text>
-          <Text className="text-[10px] uppercase font-bold text-gray-400 mt-1 tracking-widest">Updating...</Text>
+          <Text className="text-xl font-black text-white tracking-tight text-emerald-500">CITYGUARD LIVE</Text>
+          <Text className="text-[10px] uppercase font-bold text-gray-400 mt-1 tracking-widest">Tactical Threat Heatmap</Text>
         </View>
-        <View className="h-3 w-3 rounded-full bg-emerald-500 animate-pulse border-2 border-emerald-900" />
+        <View className="h-4 w-4 rounded-full bg-red-600 animate-pulse border-2 border-red-900 shadow-lg shadow-red-500" />
+      </View>
+
+      <View className="absolute bottom-24 left-4 bg-gray-900/80 px-3 py-2 rounded-xl border border-gray-800">
+         <View className="flex-row items-center mb-1">
+            <View className="h-2 w-2 rounded-full bg-red-500 mr-2" />
+            <Text className="text-[10px] text-gray-300 font-bold uppercase tracking-widest">High Intensity</Text>
+         </View>
+         <View className="flex-row items-center">
+            <View className="h-2 w-2 rounded-full bg-amber-500 mr-2" />
+            <Text className="text-[10px] text-gray-300 font-bold uppercase tracking-widest">Warning Zone</Text>
+         </View>
       </View>
     </View>
   );
 }
+

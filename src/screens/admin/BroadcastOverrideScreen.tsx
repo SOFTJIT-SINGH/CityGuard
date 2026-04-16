@@ -42,16 +42,15 @@ export default function BroadcastOverrideScreen({ navigation }: any) {
         <View className="px-6 mb-6">
           <Text className="text-red-500 font-bold uppercase tracking-widest text-xs mb-2">Warning: Level 5 Access</Text>
           <Text className="text-gray-400 text-sm leading-relaxed mb-6">
-            Emergency Broadcast Override. Transmissions sent from this terminal will bypass civilian device restrictions and trigger an immediate alarm.
+            Emergency Broadcast Override. Transmissions sent from this terminal will bypass civilian device restrictions and trigger an immediate alarm across the **ENTIRE CITY**.
           </Text>
 
-          <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">Target Zone</Text>
-          <View className="flex-row justify-between mb-6">
-            {['ALL CITY', 'SECTOR 4', 'MALL ROAD'].map((z) => (
-              <TouchableOpacity key={z} onPress={() => setZone(z)} className={`p-3 rounded-xl border ${zone === z ? 'bg-red-600/20 border-red-500/50' : 'bg-gray-900 border-gray-800'} w-[31%] items-center`}>
-                <Text className={`text-xs font-bold ${zone === z ? 'text-red-400' : 'text-gray-500'}`}>{z}</Text>
-              </TouchableOpacity>
-            ))}
+          <View className="bg-red-600/10 border border-red-500/30 p-4 rounded-2xl mb-8 flex-row items-center justify-between">
+            <View>
+              <Text className="text-red-500 font-black tracking-widest text-xs uppercase">Target Zone</Text>
+              <Text className="text-white text-lg font-black tracking-tighter">GLOBAL: ALL SECTORS</Text>
+            </View>
+            <Ionicons name="globe" size={24} color="#EF4444" />
           </View>
 
           <Text className="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-2">Override Payload (Message)</Text>

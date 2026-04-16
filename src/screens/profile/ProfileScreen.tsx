@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, Linking, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -129,7 +129,19 @@ const fetchProfile = async () => {
         ))}
 
         {/* Logout Button */}
-        <TouchableOpacity className="mt-4 flex-row items-center justify-center rounded-2xl border border-red-500/30 bg-red-500/10 p-4">
+        <TouchableOpacity 
+          onPress={() => {
+            Alert.alert(
+              "Log Out",
+              "Are you sure you want to sign out?",
+              [
+                { text: "Cancel", style: "cancel" },
+                { text: "Log Out", style: "destructive", onPress: handleLogout }
+              ]
+            );
+          }}
+          className="mt-4 flex-row items-center justify-center rounded-2xl border border-red-500/30 bg-red-500/10 p-4"
+        >
           <Ionicons name="power" size={20} color="#EF4444" />
           <Text className="ml-2 text-base font-black uppercase tracking-widest text-red-500">
             Log Out

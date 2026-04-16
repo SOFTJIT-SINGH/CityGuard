@@ -17,6 +17,8 @@ import RiskPredictionScreen from '../screens/admin/RiskPredictionScreen';
 import BroadcastOverrideScreen from '../screens/admin/BroadcastOverrideScreen';
 import SearchIntelScreen from '../screens/admin/SearchIntelScreen';
 import SafetyAdvisoryScreen from '../screens/home/SafetyAdvisoryScreen';
+import FeedbackScreen from '../screens/home/FeedbackScreen';
+import PoliceStationsScreen from '../screens/map/PoliceStationsScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -154,6 +156,28 @@ export default function MainNavigator() {
           title: 'System Analytics',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="stats-chart-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        name="Feedback"
+        component={FeedbackScreen}
+        options={{
+          title: 'Citizen Feedback',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="chatbubbles-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        name="PoliceStations"
+        component={PoliceStationsScreen}
+        options={{
+          title: 'Nearby Stations',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="location-outline" size={size} color={color} />
           ),
         }}
       />
