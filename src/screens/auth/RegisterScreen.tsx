@@ -103,11 +103,11 @@ export default function RegisterScreen({ navigation }: any) {
           <View className="flex-row justify-between mb-8">
             <View className="bg-gray-900 border border-gray-800 rounded-2xl px-4 py-3 flex-row items-center w-[48%]">
               <Ionicons name="water" size={20} color="#6B7280" />
-              <TextInput className="flex-1 text-white font-mono ml-2" placeholder="Blood Group" placeholderTextColor="#6B7280" value={bloodGroup} onChangeText={setBloodGroup} />
+              <TextInput className="flex-1 text-white font-mono ml-2 text-xs" placeholder="Blood (Opt)" placeholderTextColor="#6B7280" value={bloodGroup} onChangeText={setBloodGroup} />
             </View>
-            <View className="bg-gray-900 border border-gray-800 rounded-2xl px-4 py-2 flex-row items-center w-[48%]">
+            <View className="bg-gray-900 border border-gray-800 rounded-2xl px-4 py-3 flex-row items-center w-[48%]">
               <Ionicons name="warning" size={20} color="#6B7280" />
-              <TextInput className="flex-1 text-white font-mono ml-2" placeholder="Emerg. Contact" placeholderTextColor="#6B7280" keyboardType="phone-pad" value={iceContact} onChangeText={setIceContact} />
+              <TextInput className="flex-1 text-white font-mono ml-2 text-xs" placeholder="Emergency Contact (Opt)" placeholderTextColor="#6B7280" keyboardType="phone-pad" value={iceContact} onChangeText={setIceContact} />
             </View>
           </View>
 
