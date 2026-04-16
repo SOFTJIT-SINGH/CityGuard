@@ -54,7 +54,12 @@ export default function ChatbotScreen() {
     setIsLoading(true);
 
     try {
-      const result = await geminiModel.generateContent(currentInput);
+      const currentDate = new Date().toLocaleDateString('en-US', { 
+        year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' 
+      });
+      const systemContext = `Present Day: ${currentDate}. You are CityGuard AI, a high-level assistant. Answer accurately based on the current date provided. User says: `;
+      
+      const result = await geminiModel.generateContent(systemContext + currentInput);
       const text = await result.response.text();
       const botMsg = { id: (Date.now() + 1).toString(), text: text, sender: 'bot' };
       setMessages(prev => [...prev, botMsg]);

@@ -31,14 +31,34 @@ export default function AIScannerScreen({ navigation }: any) {
     setIsScanning(true);
     
     try {
-      const promptText = `Analyze this image for any security, safety, or civilian-threat context.
+      const currentDate = new Date().toLocaleDateString('en-US', { 
+        year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' 
+      });
+      const currentTime = new Date().toLocaleTimeString();
+
+      const promptText = `Verify the authenticity of this document. 
+CONTEXT:
+- Current Reality Date: ${currentDate}
+- Current Reality Time: ${currentTime}
+- Location: Field Operation
+
+CRITICAL: Use the Current Reality Date specified above to evaluate document validity. If a document has a date in 2025 or 2026, it is NOT necessarily fabricated; check it against the Current Reality Date.
+
+Check for:
+1. Consistency in fonts and alignments.
+2. Evidence of digital manipulation or physical tampering.
+3. Presence of standard security features (holograms, seals, micro-printing) if distinguishable.
+4. Logical consistency of the data (dates, ID formats).
+
 Return ONLY a raw JSON object (without markdown wrappers like \`\`\`json) with the following structure:
 {
-  "threatLevel": "string (e.g. SECURE, LOW, ELEVATED (74%), SEVERE)",
-  "type": "string (brief description of what is seen)",
-  "confidence": "string (e.g. 89.2%)",
-  "recommendation": "string (action to take for a civilian or dispatcher)",
-  "tags": ["tag1", "tag2", "tag3"]
+  "authenticityStatus": "string (GENUINE, LIKELY GENUINE, SUSPECT, FRAUDULENT)",
+  "accuracyScore": "string (e.g. 98.5%)",
+  "documentType": "string (e.g. Passport, National ID, Driver's License)",
+  "detailedAnalysis": "string (Professional technical breakdown of the findings)",
+  "securityFeatures": ["feature1", "feature2"],
+  "tamperEvidence": "string (None detected, or description of issues)",
+  "recommendation": "string (Protocol for the officer/admin)"
 }`;
 
       const apiResult = await geminiModel.generateContent([
@@ -59,22 +79,33 @@ Return ONLY a raw JSON object (without markdown wrappers like \`\`\`json) with t
       } catch (e) {
         console.error("Failed to parse JSON", responseText);
         parsed = {
-          threatLevel: "UNKNOWN",
-          type: "AI Output Unstructured",
-          confidence: "0%",
-          recommendation: "Failed to parse AI response. " + responseText.substring(0, 100),
-          tags: ["error"]
+          authenticityStatus: "ERROR",
+          accuracyScore: "0%",
+          documentType: "Unknown",
+          detailedAnalysis: "Failed to parse forensic data.",
+          securityFeatures: [],
+          tamperEvidence: "Analysis interrupted.",
+          recommendation: "Manual inspection required. " + responseText.substring(0, 100)
         };
       }
       setResults(parsed);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Vision AI Error:", error);
+      
+      const isHighDemand = error?.message?.includes('503') || error?.toString()?.includes('503');
+      
       setResults({
-        threatLevel: "ERROR",
-        type: "Connection Failure",
-        confidence: "0%",
-        recommendation: "Failed to connect to the AI model. Check your internet connection or API Key.",
-        tags: ["System Error"]
+        authenticityStatus: isHighDemand ? "SYSTEM_OVERLOADED" : "SERVICE_ERROR",
+        accuracyScore: "0%",
+        documentType: "N/A",
+        detailedAnalysis: isHighDemand 
+          ? "The Google Gemini AI is currently experiencing extremely high demand globally. This is a temporary spike at the model provider level." 
+          : "The neural network is currently unavailable or experiencing connectivity issues.",
+        securityFeatures: [],
+        tamperEvidence: "System Busy",
+        recommendation: isHighDemand 
+          ? "Professional Recommendation: Please wait 30-60 seconds and attempt the verification again. Spikes are usually very brief." 
+          : "Please check your internet connection or API configuration and try again.",
       });
     } finally {
       setIsScanning(false);
@@ -90,37 +121,49 @@ Return ONLY a raw JSON object (without markdown wrappers like \`\`\`json) with t
           <TouchableOpacity onPress={() => navigation.openDrawer()} className="mr-4 bg-gray-900 p-2 rounded-full border border-gray-800 shadow-sm">
             <Ionicons name="menu" size={24} color="#D1D5DB" />
           </TouchableOpacity>
-          <View className="bg-emerald-500/10 p-2 rounded-xl mr-3 border border-emerald-500/20">
-            <Ionicons name="scan-outline" size={24} color="#10B981" />
+          <View className="bg-blue-500/10 p-2 rounded-xl mr-3 border border-blue-500/20">
+            <Ionicons name="shield-checkmark" size={24} color="#3B82F6" />
           </View>
-          <Text className="text-2xl font-black text-white tracking-tight">AI Vision</Text>
+          <View>
+            <Text className="text-2xl font-black text-white tracking-tight">DocVerify AI</Text>
+            <View className="flex-row items-center">
+              <View className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2" />
+              <Text className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">Neural Link Active</Text>
+            </View>
+          </View>
         </View>
       </View>
 
       <View className="px-6">
-        <Text className="text-gray-400 text-sm mb-4 leading-relaxed">
-          Upload CCTV stills or field intel for immediate neural network analysis.
+        <Text className="text-gray-400 text-sm mb-6 leading-relaxed">
+          Upload ID cards, passports, or legal documents for forensic analysis. Our AI cross-references visual patterns for authenticity detection.
         </Text>
 
         {/* Image Upload Area */}
         <TouchableOpacity 
           onPress={pickImage} 
-          className="h-64 bg-gray-900 border-2 border-dashed border-gray-700 rounded-3xl items-center justify-center mb-6 overflow-hidden relative"
+          className="h-72 bg-gray-900 border-2 border-dashed border-gray-700 rounded-3xl items-center justify-center mb-6 overflow-hidden relative shadow-2xl shadow-blue-500/10"
         >
           {image ? (
             <>
-              <Image source={{ uri: image }} className="w-full h-full opacity-80" resizeMode="cover" />
+              <Image source={{ uri: image }} className="w-full h-full" resizeMode="cover" />
               {isScanning && (
-                <View className="absolute inset-0 bg-emerald-900/40 items-center justify-center backdrop-blur-sm border-2 border-emerald-500">
-                   <ActivityIndicator size="large" color="#10B981" />
-                   <Text className="text-emerald-400 font-mono font-bold mt-4 tracking-widest animate-pulse">ANALYZING PIXELS...</Text>
+                <View className="absolute inset-0 bg-blue-900/60 items-center justify-center backdrop-blur-md">
+                   <ActivityIndicator size="large" color="#3B82F6" />
+                   <View className="mt-6 items-center">
+                    <Text className="text-blue-400 font-mono font-bold tracking-[4px] animate-pulse">RUNNING FORENSICS...</Text>
+                    <Text className="text-blue-500/60 text-[10px] mt-2 font-mono italic">Scanning for pixel manipulation</Text>
+                   </View>
                 </View>
               )}
             </>
           ) : (
-            <View className="items-center">
-              <Ionicons name="cloud-upload-outline" size={48} color="#4B5563" />
-              <Text className="text-gray-500 font-bold mt-2 uppercase tracking-widest text-xs">Select Target Image</Text>
+            <View className="items-center px-10 text-center">
+              <View className="w-16 h-16 bg-gray-800 rounded-2xl items-center justify-center mb-4 border border-gray-700">
+                <Ionicons name="document-text-outline" size={32} color="#3B82F6" />
+              </View>
+              <Text className="text-white font-bold text-base">Select Document</Text>
+              <Text className="text-gray-500 text-xs mt-1">High resolution images provide better accuracy</Text>
             </View>
           )}
         </TouchableOpacity>
@@ -129,51 +172,91 @@ Return ONLY a raw JSON object (without markdown wrappers like \`\`\`json) with t
         {image && !results && !isScanning && (
           <TouchableOpacity 
             onPress={analyzeImage} 
-            className="bg-emerald-600 p-4 rounded-2xl shadow-lg shadow-emerald-600/20 border border-emerald-500 items-center mb-6"
+            className="bg-blue-600 p-4 rounded-2xl shadow-lg shadow-blue-600/30 border border-blue-500 items-center mb-6 flex-row justify-center"
           >
-            <Text className="text-white font-black tracking-widest uppercase text-lg">Run Diagnostics</Text>
+            <Ionicons name="finger-print" size={20} color="white" className="mr-2" />
+            <Text className="text-white font-black tracking-widest uppercase text-lg ml-2">Verify Authenticity</Text>
           </TouchableOpacity>
         )}
 
         {/* AI Results Card */}
         {results && (
-          <View className="bg-gray-900 border border-gray-800 rounded-3xl p-5 mb-10 shadow-lg">
-            <View className="flex-row items-center mb-4 border-b border-gray-800 pb-3">
-              <Ionicons name="warning" size={20} color="#F59E0B" />
-              <Text className="text-amber-500 font-black tracking-widest uppercase ml-2 text-sm">Threat Assessment</Text>
+          <View className="bg-gray-900 border border-gray-800 rounded-3xl overflow-hidden mb-12 shadow-2xl shadow-black/50">
+            <View className={`p-4 flex-row items-center justify-between ${
+              results.authenticityStatus === 'GENUINE' || results.authenticityStatus === 'LIKELY GENUINE' 
+                ? 'bg-emerald-500/10 border-b border-emerald-500/20' 
+                : 'bg-red-500/10 border-b border-red-500/20'
+            }`}>
+              <View className="flex-row items-center">
+                <Ionicons 
+                  name={results.authenticityStatus === 'GENUINE' || results.authenticityStatus === 'LIKELY GENUINE' ? "checkmark-circle" : "alert-circle"} 
+                  size={24} 
+                  color={results.authenticityStatus === 'GENUINE' || results.authenticityStatus === 'LIKELY GENUINE' ? "#10B981" : "#EF4444"} 
+                />
+                <Text className={`font-black tracking-widest uppercase ml-2 text-sm ${
+                  results.authenticityStatus === 'GENUINE' || results.authenticityStatus === 'LIKELY GENUINE' ? 'text-emerald-500' : 'text-red-500'
+                }`}>
+                  {results.authenticityStatus}
+                </Text>
+              </View>
+              <View className="bg-gray-900/50 px-3 py-1 rounded-full border border-gray-800">
+                <Text className="text-blue-400 font-mono text-[10px] font-bold">{results.accuracyScore} Confidence</Text>
+              </View>
             </View>
             
-            <View className="mb-4">
-              <Text className="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1">Identified Threat</Text>
-              <Text className="text-white text-lg font-bold">{results.type}</Text>
-            </View>
-
-            <View className="flex-row justify-between mb-4">
-              <View>
-                <Text className="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1">Threat Level</Text>
-                <Text className="text-red-400 font-mono font-bold">{results.threatLevel}</Text>
+            <View className="p-6">
+              <View className="mb-6">
+                <Text className="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1.5">Document Type Identified</Text>
+                <Text className="text-white text-xl font-black">{results.documentType}</Text>
               </View>
-              <View>
-                <Text className="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1">AI Confidence</Text>
-                <Text className="text-emerald-400 font-mono font-bold">{results.confidence}</Text>
+
+              <View className="mb-6 bg-gray-950/50 p-4 rounded-2xl border border-gray-800">
+                <Text className="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-2 flex-row items-center">
+                  <Ionicons name="reader-outline" size={10} color="#6B7280" /> Forensic Analysis
+                </Text>
+                <Text className="text-gray-300 text-sm leading-relaxed italic">"{results.detailedAnalysis}"</Text>
               </View>
-            </View>
 
-            <View className="mb-4">
-              <Text className="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1">Action Protocol</Text>
-              <Text className="text-gray-300 text-sm leading-relaxed">{results.recommendation}</Text>
-            </View>
-
-            <View className="flex-row flex-wrap gap-2 mt-2">
-              {results.tags.map((tag: string, index: number) => (
-                <View key={index} className="bg-gray-800 px-3 py-1 rounded-full border border-gray-700">
-                  <Text className="text-gray-400 text-xs font-mono">{tag}</Text>
+              <View className="flex-row gap-4 mb-6">
+                <View className="flex-1">
+                  <Text className="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-1.5">Tamper Status</Text>
+                  <Text className={`text-xs font-bold ${results.tamperEvidence === 'None detected' ? 'text-emerald-400' : 'text-amber-400'}`}>
+                    {results.tamperEvidence}
+                  </Text>
                 </View>
-              ))}
+              </View>
+
+              <View className="mb-6">
+                <Text className="text-gray-500 text-[10px] uppercase font-bold tracking-widest mb-2 text-center underline">Security Features Detected</Text>
+                <View className="flex-row flex-wrap gap-2">
+                  {results.securityFeatures?.length > 0 ? (
+                    results.securityFeatures.map((tag: string, index: number) => (
+                      <View key={index} className="bg-blue-500/5 px-3 py-1.5 rounded-lg border border-blue-500/20">
+                        <Text className="text-blue-400 text-[10px] font-mono font-bold uppercase">{tag}</Text>
+                      </View>
+                    ))
+                  ) : (
+                      <Text className="text-gray-600 text-[10px] italic">No distinctive security features isolated</Text>
+                  )}
+                </View>
+              </View>
+
+              <View className="bg-blue-600/10 border border-blue-500/30 p-4 rounded-2xl">
+                <Text className="text-blue-400 text-[10px] uppercase font-bold tracking-widest mb-1">Standard Operating Procedure</Text>
+                <Text className="text-white text-xs leading-relaxed font-medium">{results.recommendation}</Text>
+              </View>
+
+              <TouchableOpacity 
+                onPress={() => { setResults(null); setImage(null); }}
+                className="mt-8 py-3 items-center border border-gray-800 rounded-xl"
+              >
+                <Text className="text-gray-500 font-bold uppercase tracking-tighter text-xs">Clear and Reset Analysis</Text>
+              </TouchableOpacity>
             </View>
           </View>
         )}
       </View>
     </ScrollView>
+
   );
 }
