@@ -20,6 +20,8 @@ import SafetyAdvisoryScreen from '../screens/home/SafetyAdvisoryScreen';
 import FeedbackScreen from '../screens/home/FeedbackScreen';
 import PoliceStationsScreen from '../screens/map/PoliceStationsScreen';
 
+import SupportScreen from '../screens/home/SupportScreen';
+
 const Drawer = createDrawerNavigator();
 
 export default function MainNavigator() {
@@ -167,6 +169,17 @@ export default function MainNavigator() {
           title: 'Citizen Feedback',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="chatbubbles-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        name="Support"
+        component={SupportScreen}
+        options={{
+          title: 'Help & Support',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="help-buoy-outline" size={size} color={color} />
           ),
         }}
       />

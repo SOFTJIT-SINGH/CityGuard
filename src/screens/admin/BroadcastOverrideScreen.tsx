@@ -1,23 +1,48 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../context/AuthContext';
+
 export default function BroadcastOverrideScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
   const [message, setMessage] = useState('');
   const [zone, setZone] = useState('ALL CITY');
+  const [loading, setLoading] = useState(false);
 
-  const triggerOverride = () => {
+  const triggerOverride = async () => {
     if (!message) return Alert.alert("Error", "Message payload cannot be empty.");
+    
     Alert.alert(
       "CONFIRM OVERRIDE", 
       `Are you sure you want to broadcast this to ${zone}? This will bypass user silent modes.`,
       [
         { text: "Cancel", style: "cancel" },
-        { text: "TRANSMIT", style: "destructive", onPress: () => {
-          Alert.alert("BROADCAST SENT", "Emergency alert has been transmitted to all devices in the target zone.");
-          setMessage('');
+        { text: "TRANSMIT", style: "destructive", onPress: async () => {
+           setLoading(true);
+           try {
+             const { error } = await supabase.from('broadcasts').insert([
+               {
+                 message,
+                 zone,
+                 sender_id: user?.id,
+                 priority: 'CRITICAL',
+                 created_at: new Date().toISOString()
+               }
+             ]);
+
+             if (error) throw error;
+
+             Alert.alert("BROADCAST SENT", "Emergency alert has been transmitted and logged in the community database.");
+             setMessage('');
+           } catch (e: any) {
+             Alert.alert("Transmission Failed", e.message);
+           } finally {
+             setLoading(false);
+           }
         }}
       ]
     );
@@ -64,8 +89,16 @@ export default function BroadcastOverrideScreen({ navigation }: any) {
             className="bg-gray-900 border border-red-900/50 text-white p-4 rounded-2xl h-40 align-top font-mono mb-8" 
           />
 
-          <TouchableOpacity onPress={triggerOverride} className="bg-red-600 p-5 rounded-2xl items-center shadow-lg shadow-red-600/40 border border-red-500">
-            <Text className="text-white font-black tracking-widest uppercase text-xl">Transmit Override</Text>
+          <TouchableOpacity 
+            onPress={triggerOverride} 
+            disabled={loading}
+            className="bg-red-600 p-5 rounded-2xl items-center shadow-lg shadow-red-600/40 border border-red-500"
+          >
+            {loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text className="text-white font-black tracking-widest uppercase text-xl">Transmit Message</Text>
+            )}
           </TouchableOpacity>
         </View>
 

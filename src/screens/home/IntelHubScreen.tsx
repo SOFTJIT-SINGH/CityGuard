@@ -1,16 +1,39 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
+import { supabase } from '../../lib/supabase';
+import dayjs from 'dayjs';
 
 export default function IntelHubScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
-
+  const [broadcasts, setBroadcasts] = useState<any[]>([]);
   const [reports, setReports] = useState([
     { id: 1, title: "Suspicious Vehicle", desc: "Black van circling Sector 4 park with obscured plates.", score: 85, verifiedBy: 12, time: "10 mins ago" },
     { id: 2, title: "Vandalism", desc: "Graffiti being sprayed on the Bus Stand back wall.", score: 40, verifiedBy: 2, time: "45 mins ago" },
     { id: 3, title: "Loud Altercation", desc: "Two individuals fighting near Golden Temple entrance.", score: 92, verifiedBy: 34, time: "1 hour ago" },
   ]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchBroadcasts();
+    }, [])
+  );
+
+  const fetchBroadcasts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('broadcasts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (data) setBroadcasts(data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const handleVote = (id: number, type: 'up' | 'down') => {
     setReports(reports.map(r => {
@@ -39,11 +62,38 @@ export default function IntelHubScreen({ navigation }: any) {
 
       <View className="px-6 mb-4">
         <Text className="text-gray-400 text-sm leading-relaxed">
-          Review crowd-sourced incident reports. Upvote to verify credibility, downvote to flag as fake or resolved.
+          Review crowd-sourced incident reports and official city-wide overrides.
         </Text>
       </View>
 
       <ScrollView className="px-6" showsVerticalScrollIndicator={false}>
+        
+        {/* Real Broadcast Overrides */}
+        {broadcasts.map((b) => (
+          <View key={b.id} className="bg-red-600/10 border-2 border-red-500/30 rounded-3xl p-5 mb-6 shadow-xl relative overflow-hidden">
+            <View className="absolute top-0 right-0 bg-red-600 px-3 py-1 rounded-bl-2xl">
+              <Text className="text-white text-[10px] font-black uppercase tracking-widest">CRITICAL OVERRIDE</Text>
+            </View>
+            
+            <View className="flex-row items-center mb-3">
+              <Ionicons name="radio" size={18} color="#EF4444" />
+              <Text className="text-red-500 text-xs font-black uppercase tracking-widest ml-2">Official Dispatch • {b.zone}</Text>
+            </View>
+
+            <Text className="text-white text-lg font-black tracking-tight mb-4">
+              {b.message}
+            </Text>
+
+            <View className="flex-row items-center justify-between border-t border-red-500/20 pt-3">
+              <Text className="text-gray-500 text-[10px] font-mono">{dayjs(b.created_at).format('HH:mm:ss')} • SYSTEM PERSISTENT</Text>
+              <View className="bg-red-500 px-2 py-1 rounded-md">
+                 <Text className="text-white text-[10px] font-black italic">PRIORITY 1</Text>
+              </View>
+            </View>
+          </View>
+        ))}
+
+        <Text className="text-gray-500 text-[10px] font-black uppercase tracking-[4px] mb-6 mt-2 text-center">Citizen Incident Logs</Text>
         {reports.map((report) => (
           <View key={report.id} className="bg-gray-900 border border-gray-800 rounded-3xl p-5 mb-5 shadow-lg relative overflow-hidden">
             
