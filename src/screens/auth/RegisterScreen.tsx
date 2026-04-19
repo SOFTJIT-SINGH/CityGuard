@@ -17,8 +17,14 @@ export default function RegisterScreen({ navigation }: any) {
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
-    if (!name || !email || !password || !confirmPassword || !phoneNumber) {
-      Alert.alert("Error", "Name, Email, Phone Number, and Passwords are required.");
+    // Reduced strictness for easier testing/demonstration
+    if (!email || !password) {
+      Alert.alert("Error", "Email and Password are required at minimum.");
+      return;
+    }
+
+    if (!name || !phoneNumber) {
+      Alert.alert("Note", "Please provide a Name and Phone Number for your operative profile.");
       return;
     }
 
@@ -27,37 +33,21 @@ export default function RegisterScreen({ navigation }: any) {
       return;
     }
 
-    setLoading(true);
-    const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
-
-    if (authError) {
-      Alert.alert("Signup Failed", authError.message);
-      setLoading(false);
-      return;
-    }
-
-    if (authData.user) {
-      const { error: profileError } = await supabase.from('profiles').insert([
-        {
-          id: authData.user.id,
-          full_name: name,
-          phone_number: phoneNumber,
-          blood_type: bloodGroup,
-          ice_contact: iceContact,
-          operative_id: `OP-${Math.floor(1000 + Math.random() * 9000)}`,
-          role: 'civilian'
-        }
-      ]);
-
-      if (profileError) {
-        console.error("Profile insertion error:", profileError);
-        Alert.alert("Error", "Failed to create your profile.");
-      } else {
-        Alert.alert("Success", "Account created successfully. Please log in.");
-        navigation.navigate('Login');
+    // Wait! Generate a mock 4-digit OTP for the college project demonstration
+    const mockOtp = Math.floor(1000 + Math.random() * 9000).toString();
+    
+    // Navigate to the OTP verification screen
+    navigation.navigate('Otp', {
+      expectedOtp: mockOtp,
+      userData: {
+        name,
+        email,
+        password,
+        phoneNumber,
+        bloodGroup,
+        iceContact
       }
-    }
-    setLoading(false);
+    });
   };
 
   return (
