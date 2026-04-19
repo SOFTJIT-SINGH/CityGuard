@@ -33,12 +33,24 @@ export default function RegisterScreen({ navigation }: any) {
       return;
     }
 
-    // Wait! Generate a mock 4-digit OTP for the college project demonstration
-    const mockOtp = Math.floor(1000 + Math.random() * 9000).toString();
+    setLoading(true);
     
-    // Navigate to the OTP verification screen
+    // Call Supabase signUp to trigger the real email verification/OTP
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    });
+
+    setLoading(false);
+
+    if (authError) {
+      Alert.alert("Signup Failed", authError.message);
+      return;
+    }
+
+    // Navigate to the OTP verification screen using the real email
     navigation.navigate('Otp', {
-      expectedOtp: mockOtp,
+      email: email,
       userData: {
         name,
         email,
@@ -51,10 +63,21 @@ export default function RegisterScreen({ navigation }: any) {
   };
 
   return (
-    <KeyboardAvoidingView className="flex-1 bg-gray-950" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <KeyboardAvoidingView 
+      className="flex-1 bg-gray-950" 
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+    >
       <StatusBar style="light" />
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingTop: Math.max(insets.top, 48), paddingBottom: 40 }}>
-        
+      <ScrollView 
+        keyboardShouldPersistTaps="handled" 
+        contentContainerStyle={{ 
+          paddingHorizontal: 24, 
+          paddingTop: Math.max(insets.top, 48), 
+          paddingBottom: 250 // Extra massive buffer
+        }}
+        showsVerticalScrollIndicator={false}
+      >
         <TouchableOpacity onPress={() => navigation.goBack()} className="mb-6">
             <Ionicons name="arrow-back" size={28} color="#10B981" />
         </TouchableOpacity>
@@ -95,7 +118,7 @@ export default function RegisterScreen({ navigation }: any) {
               <Ionicons name="water" size={20} color="#6B7280" />
               <TextInput className="flex-1 text-white font-mono ml-2 text-xs" placeholder="Blood (Opt)" placeholderTextColor="#6B7280" value={bloodGroup} onChangeText={setBloodGroup} />
             </View>
-            <View className="bg-gray-900 border border-gray-800 rounded-2xl px-4 py-3 flex-row items-center w-[48%]">
+            <View className="bg-gray-900 border border-gray-800 rounded-2xl px-4 py-1 flex-row items-center w-[48%]">
               <Ionicons name="warning" size={20} color="#6B7280" />
               <TextInput className="flex-1 text-white font-mono ml-2 text-xs" placeholder="Emergency Contact (Opt)" placeholderTextColor="#6B7280" keyboardType="phone-pad" value={iceContact} onChangeText={setIceContact} />
             </View>
@@ -104,7 +127,7 @@ export default function RegisterScreen({ navigation }: any) {
           <TouchableOpacity 
             onPress={handleRegister} 
             disabled={loading}
-            className="bg-emerald-600 py-4 rounded-2xl items-center shadow-lg shadow-emerald-600/30 border border-emerald-500"
+            className="bg-emerald-600 py-4 rounded-2xl items-center shadow-lg shadow-emerald-600/30 border border-emerald-500 mb-10"
           >
             {loading ? (
               <ActivityIndicator color="white" />
