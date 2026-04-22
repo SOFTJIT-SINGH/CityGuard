@@ -78,7 +78,7 @@ export default function LoginScreen({ navigation }: any) {
 
         <TouchableOpacity onPress={() => navigation.navigate('Register')} className="mt-6 p-2">
           <Text className="text-gray-400 text-center text-sm font-bold">
-            Don&apos;t have an account? <Text className="text-emerald-400 underline">Sign Up</Text>
+            Don&apos;t have an account? <Text className="text-emerald-400">Sign Up</Text>
           </Text>
         </TouchableOpacity>
       </View>
