@@ -36,6 +36,35 @@ export default function ReportCrimeScreen({ navigation }: any) {
     setLocation(loc.coords);
   };
 
+  const uploadImage = async (uri: string) => {
+    try {
+      const fileName = `${user?.id}/${Date.now()}.jpg`;
+      const formData = new FormData();
+      formData.append('file', {
+        uri,
+        name: fileName,
+        type: 'image/jpeg',
+      } as any);
+
+      const { data, error } = await supabase.storage
+        .from('images')
+        .upload(fileName, formData, {
+          contentType: 'image/jpeg',
+        });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('images')
+        .getPublicUrl(fileName);
+
+      return publicUrl;
+    } catch (error) {
+      console.error("Upload error:", error);
+      throw error;
+    }
+  };
+
   const submitReport = async () => {
     if (!title || !description) {
       Alert.alert("Error", "Title and Description are required.");
@@ -44,8 +73,10 @@ export default function ReportCrimeScreen({ navigation }: any) {
 
     setLoading(true);
     try {
-      // In a real app, you would upload the image to Supabase Storage first
-      // and get the public URL. For now, we store the metadata.
+      let uploadedImageUrl = null;
+      if (image) {
+        uploadedImageUrl = await uploadImage(image);
+      }
       
       const { error } = await supabase.from('reports').insert([
         {
@@ -56,6 +87,9 @@ export default function ReportCrimeScreen({ navigation }: any) {
           report_tag: 'OPERATIVE_LOG',
           reported_at: new Date().toISOString(),
           severity: 'medium',
+          image_url: uploadedImageUrl,
+          location_lat: location?.latitude,
+          location_lng: location?.longitude,
         }
       ]);
 

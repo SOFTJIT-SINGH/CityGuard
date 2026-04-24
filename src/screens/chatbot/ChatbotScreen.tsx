@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingVi
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { geminiModel } from '../../lib/gemini';
+import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../lib/supabase';
 
 const TypingIndicator = () => {
   const dot1 = useRef(new Animated.Value(0.4)).current;
@@ -45,6 +47,8 @@ export default function ChatbotScreen() {
     { id: '1', text: "CityGuard AI Online. How can I assist you?", sender: 'bot' }
   ]);
 
+  const { user } = useAuth();
+
   const sendMessage = async () => {
     if (!inputText.trim()) return;
     const userMsg = { id: Date.now().toString(), text: inputText.trim(), sender: 'user' };
@@ -54,6 +58,14 @@ export default function ChatbotScreen() {
     setIsLoading(true);
 
     try {
+      // Save user message to DB
+      await supabase.from('chatbot_history').insert([{
+        user_id: user?.id,
+        message: currentInput,
+        sender: 'user',
+        created_at: new Date().toISOString()
+      }]);
+
       const currentDate = new Date().toLocaleDateString('en-US', { 
         year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' 
       });
@@ -63,6 +75,15 @@ export default function ChatbotScreen() {
       const text = await result.response.text();
       const botMsg = { id: (Date.now() + 1).toString(), text: text, sender: 'bot' };
       setMessages(prev => [...prev, botMsg]);
+
+      // Save bot response to DB
+      await supabase.from('chatbot_history').insert([{
+        user_id: user?.id,
+        message: text,
+        sender: 'bot',
+        created_at: new Date().toISOString()
+      }]);
+
     } catch (error) {
       console.error(error);
       const errorMsg = { id: (Date.now() + 1).toString(), text: "[Error communicating with server] API key may be invalid or expired. Please check your credentials.", sender: 'bot' };

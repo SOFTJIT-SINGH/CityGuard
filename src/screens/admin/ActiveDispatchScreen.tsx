@@ -39,7 +39,7 @@ export default function ActiveDispatchScreen({ navigation }: any) {
     try {
       const { error } = await supabase
         .from('dispatch_logs')
-        .update({ status: newStatus, updated_at: new Date() })
+        .update({ status: newStatus })
         .eq('id', id);
 
       if (error) throw error;
