@@ -9,17 +9,31 @@ import dayjs from 'dayjs';
 export default function IntelHubScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const [broadcasts, setBroadcasts] = useState<any[]>([]);
-  const [reports, setReports] = useState([
-    { id: 1, title: "Suspicious Vehicle", desc: "Black van circling Sector 4 park with obscured plates.", score: 85, verifiedBy: 12, time: "10 mins ago" },
-    { id: 2, title: "Vandalism", desc: "Graffiti being sprayed on the Bus Stand back wall.", score: 40, verifiedBy: 2, time: "45 mins ago" },
-    { id: 3, title: "Loud Altercation", desc: "Two individuals fighting near Golden Temple entrance.", score: 92, verifiedBy: 34, time: "1 hour ago" },
-  ]);
+  const [reports, setReports] = useState<any[]>([]);
+  const [loadingReports, setLoadingReports] = useState(true);
 
   useFocusEffect(
     React.useCallback(() => {
       fetchBroadcasts();
+      fetchReports();
     }, [])
   );
+
+  const fetchReports = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('reports')
+        .select('*')
+        .order('reported_at', { ascending: false })
+        .limit(10);
+
+      if (data) setReports(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingReports(false);
+    }
+  };
 
   const fetchBroadcasts = async () => {
     try {
@@ -94,32 +108,34 @@ export default function IntelHubScreen({ navigation }: any) {
         ))}
 
         <Text className="text-gray-500 text-[10px] font-black uppercase tracking-[4px] mb-6 mt-2 text-center">Citizen Incident Logs</Text>
-        {reports.map((report) => (
+        
+        {loadingReports ? (
+          <ActivityIndicator color="#A855F7" className="mt-4" />
+        ) : reports.length === 0 ? (
+          <Text className="text-gray-600 text-center font-bold mt-10">No incident logs found.</Text>
+        ) : reports.map((report) => (
           <View key={report.id} className="bg-gray-900 border border-gray-800 rounded-3xl p-5 mb-5 shadow-lg relative overflow-hidden">
             
-            {/* Credibility Score Overlay */}
-            <View className={`absolute top-0 right-0 px-4 py-1 rounded-bl-2xl ${report.score > 80 ? 'bg-emerald-600' : report.score > 50 ? 'bg-amber-500' : 'bg-red-600'}`}>
-              <Text className="text-white text-xs font-black tracking-widest uppercase">
-                {report.score}% Trust
+            {/* Severity Badge */}
+            <View className={`absolute top-0 right-0 px-4 py-1 rounded-bl-2xl ${report.severity === 'high' ? 'bg-red-600' : report.severity === 'medium' ? 'bg-amber-600' : 'bg-emerald-600'}`}>
+              <Text className="text-white text-[10px] font-black tracking-widest uppercase">
+                {report.severity || 'LOW'} SEVERITY
               </Text>
             </View>
-
-            <Text className="text-white text-xl font-black mt-4 mb-1">{report.title}</Text>
-            <Text className="text-gray-400 text-sm leading-relaxed mb-4">{report.desc}</Text>
+ 
+            <Text className="text-white text-xl font-black mt-4 mb-1 uppercase tracking-tight">{report.title}</Text>
+            <Text className="text-gray-400 text-sm leading-relaxed mb-4">{report.description}</Text>
             
             <View className="flex-row items-center justify-between border-t border-gray-800 pt-4">
               <View className="flex-row items-center">
                 <Ionicons name="time-outline" size={14} color="#6B7280" />
-                <Text className="text-gray-500 text-xs font-mono ml-1">{report.time} • {report.verifiedBy} verifications</Text>
+                <Text className="text-gray-500 text-[10px] font-mono ml-1 uppercase">
+                  {dayjs(report.reported_at).format('DD MMM • HH:mm')}
+                </Text>
               </View>
-
-              <View className="flex-row gap-3">
-                <TouchableOpacity onPress={() => handleVote(report.id, 'down')} className="bg-red-500/10 p-2 rounded-full border border-red-500/30">
-                  <Ionicons name="thumbs-down" size={20} color="#EF4444" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleVote(report.id, 'up')} className="bg-emerald-500/10 p-2 rounded-full border border-emerald-500/30">
-                  <Ionicons name="thumbs-up" size={20} color="#10B981" />
-                </TouchableOpacity>
+ 
+              <View className="bg-purple-500/10 px-3 py-1 rounded-full border border-purple-500/20">
+                <Text className="text-purple-400 text-[10px] font-black uppercase tracking-widest">VERIFIED LOG</Text>
               </View>
             </View>
           </View>

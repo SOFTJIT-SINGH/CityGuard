@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
 import SOSModal from '../../components/ui/SOSButton';
 import { Audio } from 'expo-av';
+import * as SMS from 'expo-sms';
 
 const { width } = Dimensions.get('window');
 
@@ -73,11 +74,72 @@ export default function HomeScreen({ navigation }: any) {
         Alert.alert('Permission Denied', 'Location access is required for SOS.');
         return;
       }
+      
       const loc = await Location.getCurrentPositionAsync({});
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        Alert.alert('Error', 'No active user session found.');
+        return;
+      }
+
+      // Fetch full profile info for the snapshot
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      // Store the alert in the database
+      const { error } = await supabase.from('emergency_alerts').insert([
+        {
+          user_id: user.id,
+          full_name: profile?.full_name || 'Unknown',
+          phone_number: profile?.phone_number || 'N/A',
+          email: user.email || 'N/A',
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude,
+          status: 'active'
+        }
+      ]);
+
+      if (error) throw error;
+
+      // Fetch emergency contacts to "send SMS"
+      const { data: contacts } = await supabase
+        .from('emergency_contacts')
+        .select('contact_name, phone_number')
+        .eq('user_id', user.id)
+        .eq('is_active', true);
+
       console.log('SOS Dispatched at: ', loc.coords.latitude, loc.coords.longitude);
-      Alert.alert('SOS SENT', 'Authorities have been notified of your location.');
-    } catch (error) {
-      console.error(error);
+      
+      let contactMsg = '';
+      if (contacts && contacts.length > 0) {
+        const phoneNumbers = contacts.map(c => c.phone_number);
+        const isAvailable = await SMS.isAvailableAsync();
+        
+        if (isAvailable) {
+          const message = `EMERGENCY SOS: ${profile?.full_name || 'A user'} is in danger! Location: https://www.google.com/maps/search/?api=1&query=${loc.coords.latitude},${loc.coords.longitude}`;
+          
+          const { result } = await SMS.sendSMSAsync(phoneNumbers, message);
+          
+          if (result === 'sent') {
+            contactMsg = `\n\nSMS Alerts dispatched to ${contacts.length} contacts.`;
+          } else {
+            contactMsg = `\n\nSMS composer opened for ${contacts.length} contacts.`;
+          }
+        } else {
+          contactMsg = `\n\nSMS service is not available on this device.`;
+        }
+        
+        console.log('Notifying contacts:', contacts);
+      }
+
+      Alert.alert('SOS SENT', `Authorities have been notified of your location.${contactMsg}`);
+    } catch (error: any) {
+      console.error('SOS Error:', error.message);
+      Alert.alert('Protocol Failure', 'Failed to dispatch SOS: ' + error.message);
     }
   };
 

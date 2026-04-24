@@ -161,13 +161,14 @@ export default function ProfileScreen({ navigation }: any) {
         </TouchableOpacity>
 
         <TouchableOpacity 
+          onPress={() => navigation.navigate('EmergencyContacts')}
           className="flex-row items-center justify-between mt-2 rounded-2xl border border-gray-800 bg-gray-900 p-4 shadow-sm"
         >
           <View className="flex-row items-center">
             <View className="mr-4 rounded-xl bg-blue-500/10 p-2 border border-blue-500/20">
-              <Ionicons name="notifications" size={20} color="#3B82F6" />
+              <Ionicons name="people" size={20} color="#3B82F6" />
             </View>
-            <Text className="text-base font-bold text-white">Alert Configurations</Text>
+            <Text className="text-base font-bold text-white">Emergency Contacts</Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color="#4B5563" />
         </TouchableOpacity>

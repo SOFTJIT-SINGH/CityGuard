@@ -5,6 +5,7 @@ import { View, ActivityIndicator } from 'react-native';
 import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
 import EditProfileScreen from '../screens/profile/EditProfileScreen';
+import EmergencyContactsScreen from '../screens/profile/EmergencyContactsScreen';
 import ReportCrimeScreen from '../screens/report/ReportCrimeScreen';
 
 // 1. IMPORTANT: Use the session from your AuthContext
@@ -53,6 +54,12 @@ export default function RootNavigator() {
           <Stack.Screen
             name="EditProfile"
             component={EditProfileScreen}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="EmergencyContacts"
+            component={EmergencyContactsScreen}
             options={{ headerShown: false }}
           />
         </>
