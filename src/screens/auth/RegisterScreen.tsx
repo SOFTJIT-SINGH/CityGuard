@@ -51,14 +51,14 @@ export default function RegisterScreen({ navigation }: any) {
     // Navigate to the OTP verification screen using the real email
     navigation.navigate('Otp', {
       email: email,
-      userData: {
+      userDataString: JSON.stringify({
         name,
         email,
         password,
         phoneNumber,
         bloodGroup,
         iceContact
-      }
+      })
     });
   };
 

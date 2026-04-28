@@ -66,7 +66,7 @@ export default function AdminReportsScreen({ navigation }: any) {
 
   const renderReportItem = ({ item }: { item: any }) => (
     <TouchableOpacity 
-      onPress={() => navigation.navigate('ReportAction', { report: item })}
+      onPress={() => navigation.navigate('ReportAction', { reportString: JSON.stringify(item) })}
       className="bg-gray-900 border border-gray-800 rounded-2xl p-4 mb-4"
     >
       <View className="flex-row justify-between items-start mb-2">

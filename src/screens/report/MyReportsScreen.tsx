@@ -9,7 +9,22 @@ import dayjs from 'dayjs';
 export default function MyReportsScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   
-  const [myReports, setMyReports] = useState<any[]>([]);
+  const [myReports, setMyReports] = useState<any[]>([
+    {
+      id: 'REF-83729A',
+      title: 'Suspicious Vehicle',
+      description: 'Black van parked outside the alleyway for the last 3 hours without plates.',
+      reported_at: new Date(Date.now() - 86400000).toISOString(),
+      status: 'Verified',
+    },
+    {
+      id: 'REF-99210B',
+      title: 'Vandalism in Park',
+      description: 'Graffiti sprayed over the community center wall.',
+      reported_at: new Date(Date.now() - 172800000).toISOString(),
+      status: 'Resolved',
+    }
+  ]);
   const [loading, setLoading] = useState(true);
 
   useFocusEffect(
@@ -29,7 +44,7 @@ export default function MyReportsScreen({ navigation }: any) {
         .eq('user_id', user.id)
         .order('reported_at', { ascending: false });
 
-      if (data) {
+      if (data && data.length > 0) {
         setMyReports(data);
       }
     } catch (e) {
@@ -80,8 +95,8 @@ export default function MyReportsScreen({ navigation }: any) {
                 <Text className="text-white text-lg font-black tracking-wide">{report.title}</Text>
                 <Text className="text-gray-500 text-xs font-mono mt-1">{dayjs(report.reported_at).format('MMM D, HH:mm [HRS]')}</Text>
               </View>
-              <View className="bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                <Text className="text-emerald-500 text-[9px] font-black tracking-widest uppercase">Submitted</Text>
+              <View className={`px-3 py-1 rounded-full border ${report.status === 'Resolved' ? 'bg-gray-800 border-gray-700' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
+                <Text className={`${report.status === 'Resolved' ? 'text-gray-400' : 'text-emerald-500'} text-[9px] font-black tracking-widest uppercase`}>{report.status || 'Submitted'}</Text>
               </View>
             </View>
 

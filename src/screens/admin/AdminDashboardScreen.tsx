@@ -71,7 +71,7 @@ export default function AdminDashboardScreen({ navigation }: any) {
             <View className="h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-pulse" />
             <Text className="text-emerald-500 font-mono text-[10px] font-black uppercase tracking-widest">System Online</Text>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <TouchableOpacity onPress={() => navigation.navigate('UserDashboard', { screen: 'Profile' })}>
              <Image 
                 source={{ uri: `https://ui-avatars.com/api/?name=${profile?.full_name || 'Admin'}&background=10B981&color=fff&bold=true` }} 
                 className="h-10 w-10 rounded-xl border border-emerald-500/30"

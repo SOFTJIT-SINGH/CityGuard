@@ -304,6 +304,53 @@ export default function HomeScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
 
+        {/* MORE CIVILIAN TOOLS */}
+        <View className="mt-6 px-6 flex-row flex-wrap justify-between">
+          <TouchableOpacity
+            onPress={() => navigation.navigate('SafeWalk')}
+            className="w-[48%] bg-gray-900 border border-red-900/30 rounded-[30px] p-5 mb-4"
+          >
+            <View className="bg-red-500/10 h-10 w-10 rounded-xl items-center justify-center border border-red-500/20 mb-3">
+              <Ionicons name="walk" size={20} color="#EF4444" />
+            </View>
+            <Text className="text-white font-black tracking-tight">SAFEWALK</Text>
+            <Text className="text-gray-500 text-[9px] uppercase font-bold tracking-widest">Escort Timer</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate('IntelHub')}
+            className="w-[48%] bg-gray-900 border border-indigo-900/30 rounded-[30px] p-5 mb-4"
+          >
+            <View className="bg-indigo-500/10 h-10 w-10 rounded-xl items-center justify-center border border-indigo-500/20 mb-3">
+              <Ionicons name="people" size={20} color="#818CF8" />
+            </View>
+            <Text className="text-white font-black tracking-tight">COMMUNITY</Text>
+            <Text className="text-gray-500 text-[9px] uppercase font-bold tracking-widest">Intel Hub</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate('SafetyAdvisory')}
+            className="w-[48%] bg-gray-900 border border-amber-900/30 rounded-[30px] p-5 mb-4"
+          >
+            <View className="bg-amber-500/10 h-10 w-10 rounded-xl items-center justify-center border border-amber-500/20 mb-3">
+              <Ionicons name="warning" size={20} color="#F59E0B" />
+            </View>
+            <Text className="text-white font-black tracking-tight">ADVISORY</Text>
+            <Text className="text-gray-500 text-[9px] uppercase font-bold tracking-widest">Smart Alerts</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate('MyReports')}
+            className="w-[48%] bg-gray-900 border border-emerald-900/30 rounded-[30px] p-5 mb-4"
+          >
+            <View className="bg-emerald-500/10 h-10 w-10 rounded-xl items-center justify-center border border-emerald-500/20 mb-3">
+              <Ionicons name="folder-open" size={20} color="#10B981" />
+            </View>
+            <Text className="text-white font-black tracking-tight">MY REPORTS</Text>
+            <Text className="text-gray-500 text-[9px] uppercase font-bold tracking-widest">Log History</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* LIVE SAFETY WIDGETS */}
         <View className="mt-6 px-6 flex-row justify-between">
           <View className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-3xl p-4">

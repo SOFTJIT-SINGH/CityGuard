@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ReportActionScreen({ route, navigation }: any) {
   const insets = useSafeAreaInsets();
-  const { report } = route.params;
+  const report = route.params?.reportString ? JSON.parse(route.params.reportString) : route.params?.report;
   const [loading, setLoading] = useState(false);
   const [adminNote, setAdminNote] = useState('');
 

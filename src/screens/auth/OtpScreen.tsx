@@ -5,7 +5,8 @@ import { StatusBar } from 'expo-status-bar';
 import { supabase } from '../../lib/supabase';
 
 export default function OtpScreen({ route, navigation }: any) {
-  const { email, userData } = route.params;
+  const { email } = route.params;
+  const userData = route.params?.userDataString ? JSON.parse(route.params.userDataString) : route.params?.userData;
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
 

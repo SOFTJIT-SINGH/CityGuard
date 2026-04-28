@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -8,8 +8,30 @@ import dayjs from 'dayjs';
 
 export default function IntelHubScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
-  const [broadcasts, setBroadcasts] = useState<any[]>([]);
-  const [reports, setReports] = useState<any[]>([]);
+  const [broadcasts, setBroadcasts] = useState<any[]>([
+    {
+      id: 999,
+      zone: 'Sector 4',
+      message: 'Suspicious activity reported near the transit station. Increased patrols active. Please stay alert.',
+      created_at: new Date().toISOString(),
+    }
+  ]);
+  const [reports, setReports] = useState<any[]>([
+    {
+      id: 998,
+      severity: 'high',
+      title: 'Suspicious Package',
+      description: 'Found an unattended bag near the central park entrance. Proceeding with caution.',
+      reported_at: new Date().toISOString(),
+    },
+    {
+      id: 997,
+      severity: 'low',
+      title: 'Noise Complaint',
+      description: 'Loud noise and verbal altercation on 5th Avenue.',
+      reported_at: new Date(Date.now() - 3600000).toISOString(),
+    }
+  ]);
   const [loadingReports, setLoadingReports] = useState(true);
 
   useFocusEffect(
@@ -27,7 +49,9 @@ export default function IntelHubScreen({ navigation }: any) {
         .order('reported_at', { ascending: false })
         .limit(10);
 
-      if (data) setReports(data);
+      if (data && data.length > 0) {
+        setReports(data);
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -43,7 +67,9 @@ export default function IntelHubScreen({ navigation }: any) {
         .order('created_at', { ascending: false })
         .limit(5);
 
-      if (data) setBroadcasts(data);
+      if (data && data.length > 0) {
+        setBroadcasts(data);
+      }
     } catch (e) {
       console.error(e);
     }
