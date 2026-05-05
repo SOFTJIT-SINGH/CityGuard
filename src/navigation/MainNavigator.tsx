@@ -18,12 +18,19 @@ import FeedbackScreen from '../screens/home/FeedbackScreen';
 import PoliceStationsScreen from '../screens/map/PoliceStationsScreen';
 import SupportScreen from '../screens/home/SupportScreen';
 
+import EmergencyContactsScreen from '../screens/profile/EmergencyContactsScreen';
+import ReportCrimeScreen from '../screens/report/ReportCrimeScreen';
+import ChatbotScreen from '../screens/chatbot/ChatbotScreen';
+import CrimeMapScreen from '../screens/map/CrimeMapScreen';
+
 import AdminReportsScreen from '../screens/admin/AdminReportsScreen';
 import ReportActionScreen from '../screens/admin/ReportActionScreen';
 import AdminVerificationScreen from '../screens/admin/AdminVerificationScreen';
 import ProfileVerificationScreen from '../screens/profile/VerificationScreen';
 import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
 import { useAuth } from '../context/AuthContext';
+import DrawerContent from './DrawerContent';
 
 const Drawer = createDrawerNavigator();
 
@@ -33,15 +40,18 @@ export default function MainNavigator() {
 
   return (
     <Drawer.Navigator
+      drawerContent={(props) => <DrawerContent {...props} />}
       screenOptions={{
         headerShown: false,
-        drawerStyle: { backgroundColor: '#030712' },
+        drawerStyle: { backgroundColor: '#030712', width: 300 },
         drawerActiveBackgroundColor: '#111827',
         drawerActiveTintColor: '#10B981',
         drawerInactiveTintColor: '#9CA3AF',
-        drawerLabelStyle: { fontSize: 16, fontWeight: 'bold', marginLeft: -10 },
+        drawerLabelStyle: { fontSize: 14, fontWeight: '900', marginLeft: -10, textTransform: 'uppercase', letterSpacing: 1 },
+        drawerItemStyle: { borderRadius: 12, marginVertical: 4, paddingHorizontal: 8 },
       }}>
       <Drawer.Screen
+        key="dashboard"
         name="Dashboard"
         component={isAdmin ? AdminDashboardScreen : TabNavigator}
         options={{
@@ -54,6 +64,7 @@ export default function MainNavigator() {
 
       {isAdmin && (
         <Drawer.Screen
+          key="user-view"
           name="UserDashboard"
           component={TabNavigator}
           options={{
@@ -66,6 +77,7 @@ export default function MainNavigator() {
       )}
 
       <Drawer.Screen
+        key="safewalk"
         name="SafeWalk"
         component={SafeWalkScreen}
         options={{
@@ -77,6 +89,7 @@ export default function MainNavigator() {
       />
 
       <Drawer.Screen
+        key="intel-hub"
         name="IntelHub"
         component={IntelHubScreen}
         options={{
@@ -88,6 +101,7 @@ export default function MainNavigator() {
       />
 
       <Drawer.Screen
+        key="my-reports"
         name="MyReports"
         component={MyReportsScreen}
         options={{
@@ -99,6 +113,7 @@ export default function MainNavigator() {
       />
 
       <Drawer.Screen
+        key="verification"
         name="Verification"
         component={ProfileVerificationScreen}
         options={{
@@ -112,6 +127,7 @@ export default function MainNavigator() {
       {isAdmin && (
         <>
           <Drawer.Screen
+            key="admin-reports"
             name="AdminReports"
             component={AdminReportsScreen}
             options={{
@@ -122,6 +138,7 @@ export default function MainNavigator() {
             }}
           />
           <Drawer.Screen
+            key="admin-verifications"
             name="AdminVerifications"
             component={AdminVerificationScreen}
             options={{
@@ -132,6 +149,7 @@ export default function MainNavigator() {
             }}
           />
           <Drawer.Screen
+            key="search-intel"
             name="SearchIntel"
             component={SearchIntelScreen}
             options={{
@@ -142,16 +160,7 @@ export default function MainNavigator() {
             }}
           />
           <Drawer.Screen
-            name="BroadcastOverride"
-            component={BroadcastOverrideScreen}
-            options={{
-              title: 'Broadcast Override',
-              drawerIcon: ({ color, size }) => (
-                <Ionicons name="warning-outline" size={size} color={color} />
-              ),
-            }}
-          />
-          <Drawer.Screen
+            key="social-monitor"
             name="SocialMonitor"
             component={SocialMonitorScreen}
             options={{
@@ -161,31 +170,48 @@ export default function MainNavigator() {
               ),
             }}
           />
-          <Drawer.Screen
-            name="RiskPrediction"
-            component={RiskPredictionScreen}
-            options={{
-              title: 'AI Risk Predictor',
-              drawerIcon: ({ color, size }) => (
-                <Ionicons name="analytics-outline" size={size} color={color} />
-              ),
-            }}
-          />
-          <Drawer.Screen
-            name="Analytics"
-            component={AnalyticsScreen}
-            options={{
-              title: 'System Analytics',
-              drawerIcon: ({ color, size }) => (
-                <Ionicons name="stats-chart-outline" size={size} color={color} />
-              ),
-            }}
-          />
         </>
       )}
 
+      <Drawer.Screen
+        key="broadcast-override"
+        name="BroadcastOverride"
+        component={BroadcastOverrideScreen}
+        options={{
+          title: 'Broadcast Override',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="warning-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        key="risk-prediction"
+        name="RiskPrediction"
+        component={RiskPredictionScreen}
+        options={{
+          title: 'AI Risk Predictor',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="analytics-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        key="analytics"
+        name="Analytics"
+        component={AnalyticsScreen}
+        options={{
+          title: 'System Analytics',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="stats-chart-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
       {/* Hidden Action Screen */}
       <Drawer.Screen
+        key="report-action"
         name="ReportAction"
         component={ReportActionScreen}
         options={{
@@ -194,6 +220,16 @@ export default function MainNavigator() {
       />
 
       <Drawer.Screen
+        key="profile"
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          drawerItemStyle: { display: 'none' }
+        }}
+      />
+
+      <Drawer.Screen
+        key="active-dispatch"
         name="ActiveDispatch"
         component={ActiveDispatchScreen}
         options={{
@@ -205,6 +241,7 @@ export default function MainNavigator() {
       />
       
       <Drawer.Screen
+        key="ai-scanner"
         name="AIScanner"
         component={AIScannerScreen}
         options={{
@@ -216,6 +253,7 @@ export default function MainNavigator() {
       />
 
       <Drawer.Screen
+        key="safety-advisory"
         name="SafetyAdvisory"
         component={SafetyAdvisoryScreen}
         options={{
@@ -227,6 +265,7 @@ export default function MainNavigator() {
       />
 
       <Drawer.Screen
+        key="feedback"
         name="Feedback"
         component={FeedbackScreen}
         options={{
@@ -238,6 +277,55 @@ export default function MainNavigator() {
       />
 
       <Drawer.Screen
+        key="emergency-contacts"
+        name="EmergencyContacts"
+        component={EmergencyContactsScreen}
+        options={{
+          title: 'Emergency Contacts',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="call-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        key="report-crime"
+        name="ReportCrime"
+        component={ReportCrimeScreen}
+        options={{
+          title: 'File an Incident',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="warning-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        key="chatbot-drawer"
+        name="Chatbot"
+        component={ChatbotScreen}
+        options={{
+          title: 'AI Safety Assistant',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="hardware-chip-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        key="crime-map-drawer"
+        name="CrimeMap"
+        component={CrimeMapScreen}
+        options={{
+          title: 'Live Threat Map',
+          drawerIcon: ({ color, size }) => (
+            <Ionicons name="map-outline" size={size} color={color} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen
+        key="police-stations"
         name="PoliceStations"
         component={PoliceStationsScreen}
         options={{
@@ -249,6 +337,7 @@ export default function MainNavigator() {
       />
 
       <Drawer.Screen
+        key="support"
         name="Support"
         component={SupportScreen}
         options={{

@@ -39,26 +39,44 @@ export default function PoliceStationsScreen({ navigation }: any) {
       // Broadened query: nodes, ways and relations within 20km
       const query = `[out:json];(node["amenity"="police"](around:20000,${lat},${lon});way["amenity"="police"](around:20000,${lat},${lon});relation["amenity"="police"](around:20000,${lat},${lon}););out center;`;
       
+      const mirrors = [
+        'https://overpass-api.de/api/interpreter',
+        'https://lz4.overpass-api.de/api/interpreter',
+        'https://z.overpass-api.de/api/interpreter',
+        'https://overpass.kumi.systems/api/interpreter'
+      ];
+
       let data;
       try {
-        const response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
-        
-        if (!response.ok) {
-          throw new Error(`Satellite Grid Offline (Status: ${response.status})`);
-        }
+        const mirrors = [
+          'https://overpass-api.de/api/interpreter',
+          'https://lz4.overpass-api.de/api/interpreter',
+          'https://z.overpass-api.de/api/interpreter',
+          'https://overpass.kumi.systems/api/interpreter'
+        ];
 
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("Safety Grid signal distorted by high traffic.");
+        let success = false;
+        for (const mirror of mirrors) {
+          try {
+            console.log(`Attempting to fetch from mirror: ${mirror}`);
+            const response = await fetch(`${mirror}?data=${encodeURIComponent(query)}`);
+            if (!response.ok) continue;
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) continue;
+            data = await response.json();
+            success = true;
+            break;
+          } catch (mirrorError) {
+            console.warn(`Mirror ${mirror} failed`);
+          }
         }
-
-        data = await response.json();
+        if (!success) throw new Error('All mirrors failed');
       } catch (apiError) {
         console.log('API Error, falling back to static data:', apiError);
         const staticStations = [
-          { id: 'mock1', name: 'Central Command Precinct', address: '100 Main Security Blvd', lat: lat + 0.01, lon: lon + 0.01, distance: 1.2 },
-          { id: 'mock2', name: 'Sector 4 Outpost', address: '450 West Block Avenue', lat: lat - 0.02, lon: lon + 0.015, distance: 2.8 },
-          { id: 'mock3', name: 'Highway Patrol Station', address: '88 North Expressway', lat: lat + 0.03, lon: lon - 0.02, distance: 4.5 },
+          { id: 'mock1', name: 'Police Station Cantonment (Cantt)', address: 'Cantonment Area, Amritsar', lat: lat + 0.01, lon: lon + 0.01, distance: 1.2 },
+          { id: 'mock2', name: 'Police Station Chheharta', address: 'GT Road, Chheharta, Amritsar', lat: lat - 0.015, lon: lon - 0.01, distance: 2.1 },
+          { id: 'mock3', name: 'Police Station Khandwala', address: 'Khandwala, Amritsar', lat: lat + 0.02, lon: lon - 0.015, distance: 3.4 },
         ];
         setStations(staticStations);
         setLoading(false);

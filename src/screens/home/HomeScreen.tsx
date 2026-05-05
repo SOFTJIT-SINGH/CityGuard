@@ -351,6 +351,39 @@ export default function HomeScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
 
+        {/* TACTICAL ANALYSIS TOOLS */}
+        <View className="mt-4 px-6 flex-row justify-between">
+          <TouchableOpacity
+            onPress={() => navigation.navigate('RiskPrediction')}
+            className="w-[31%] bg-gray-900 border border-purple-900/20 rounded-2xl p-4 items-center"
+          >
+            <View className="bg-purple-500/10 h-8 w-8 rounded-lg items-center justify-center border border-purple-500/10 mb-2">
+              <Ionicons name="analytics" size={16} color="#A855F7" />
+            </View>
+            <Text className="text-white font-black text-[9px] uppercase tracking-widest">Risk AI</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate('BroadcastOverride')}
+            className="w-[31%] bg-gray-900 border border-orange-900/20 rounded-2xl p-4 items-center"
+          >
+            <View className="bg-orange-500/10 h-8 w-8 rounded-lg items-center justify-center border border-orange-500/10 mb-2">
+              <Ionicons name="warning" size={16} color="#F97316" />
+            </View>
+            <Text className="text-white font-black text-[9px] uppercase tracking-widest">Override</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Analytics')}
+            className="w-[31%] bg-gray-900 border border-blue-900/20 rounded-2xl p-4 items-center"
+          >
+            <View className="bg-blue-500/10 h-8 w-8 rounded-lg items-center justify-center border border-blue-500/10 mb-2">
+              <Ionicons name="stats-chart" size={16} color="#3B82F6" />
+            </View>
+            <Text className="text-white font-black text-[9px] uppercase tracking-widest">Stats</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* LIVE SAFETY WIDGETS */}
         <View className="mt-6 px-6 flex-row justify-between">
           <View className="w-[48%] bg-gray-900 border border-gray-800/60 rounded-3xl p-4">
