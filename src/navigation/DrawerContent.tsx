@@ -76,7 +76,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
         </View>
 
         {/* Tactical Info Section */}
-        <View className="mx-6 my-4 p-5 bg-gray-900/40 border border-dashed border-gray-800 rounded-3xl">
+        {/* <View className="mx-6 my-4 p-5 bg-gray-900/40 border border-dashed border-gray-800 rounded-3xl">
           <Text className="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-3">System Status</Text>
           <View className="flex-row items-center justify-between mb-2">
             <Text className="text-gray-400 text-xs">Encryption</Text>
@@ -86,7 +86,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
             <Text className="text-gray-400 text-xs">Latency</Text>
             <Text className="text-blue-500 text-[10px] font-mono font-bold">14ms</Text>
           </View>
-        </View>
+        </View> */}
       </ScrollView>
 
       {/* Drawer Footer */}
@@ -100,9 +100,9 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
           </View>
           <Text className="text-red-500 font-black tracking-widest uppercase text-xs">Logout Session</Text>
         </TouchableOpacity>
-        <Text className="text-gray-700 text-[9px] font-mono text-center mt-4">
+        {/* <Text className="text-gray-700 text-[9px] font-mono text-center mt-4">
           BUILD V1.0.4-TACTICAL // {user?.id?.slice(0, 8).toUpperCase()}
-        </Text>
+        </Text> */}
       </View>
     </View>
   );

@@ -98,14 +98,18 @@ export default function AdminReportsScreen({ navigation }: any) {
 
   return (
     <View className="flex-1 bg-gray-950" style={{ paddingTop: insets.top }}>
-      <View className="px-6 py-4 flex-row items-center justify-between border-b border-gray-900">
-        <View>
-          <Text className="text-2xl font-black text-white">Admin Panel</Text>
-          <Text className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Reports Management</Text>
-        </View>
+      <View className="px-6 py-4 flex-row items-center border-b border-gray-900">
         <TouchableOpacity onPress={() => navigation.openDrawer()} className="p-2 bg-gray-900 rounded-full border border-gray-800">
           <Ionicons name="menu" size={24} color="white" />
         </TouchableOpacity>
+        <View className="ml-4">
+          
+          <Text className="text-2xl font-black text-white">Admin Panel</Text>
+          <Text className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Reports Management</Text>
+        </View>
+        {/* <TouchableOpacity onPress={() => navigation.openDrawer()} className="p-2 bg-gray-900 rounded-full border border-gray-800">
+          <Ionicons name="menu" size={24} color="white" />
+        </TouchableOpacity> */}
       </View>
 
       {loading ? (

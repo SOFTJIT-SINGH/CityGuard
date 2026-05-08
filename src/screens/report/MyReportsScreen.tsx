@@ -1,41 +1,31 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../lib/supabase';
 import dayjs from 'dayjs';
+import { useAuth } from '../../context/AuthContext';
 
 export default function MyReportsScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
+  const { user, loading: authLoading } = useAuth();
   
-  const [myReports, setMyReports] = useState<any[]>([
-    {
-      id: 'REF-83729A',
-      title: 'Suspicious Vehicle',
-      description: 'Black van parked outside the alleyway for the last 3 hours without plates.',
-      reported_at: new Date(Date.now() - 86400000).toISOString(),
-      status: 'Verified',
-    },
-    {
-      id: 'REF-99210B',
-      title: 'Vandalism in Park',
-      description: 'Graffiti sprayed over the community center wall.',
-      reported_at: new Date(Date.now() - 172800000).toISOString(),
-      status: 'Resolved',
-    }
-  ]);
+  const [myReports, setMyReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
-      fetchReports();
-    }, [])
+      if (user) {
+        fetchReports();
+      } else if (!authLoading) {
+        setLoading(false);
+      }
+    }, [user, authLoading])
   );
 
   const fetchReports = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase

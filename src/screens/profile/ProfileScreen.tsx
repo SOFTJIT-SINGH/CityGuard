@@ -1,43 +1,26 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image, ActivityIndicator, Linking, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase'; // IMPORT SUPABASE
+import { useAuth } from '../../context/AuthContext';
 
 export default function ProfileScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
+  const { user, profile, loading: authLoading } = useAuth();
 
   const [userData, setUserData] = useState<any>(null);
   const [authEmail, setAuthEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchProfile();
-    }, [])
-  );
-
-  const fetchProfile = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (user) {
-        setAuthEmail(user.email ?? null);
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-
-        if (data) setUserData(data);
-      }
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-    } finally {
+  useEffect(() => {
+    if (!authLoading) {
+      setUserData(profile);
+      setAuthEmail(user?.email ?? null);
       setLoading(false);
     }
-  };
+  }, [profile, user, authLoading]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

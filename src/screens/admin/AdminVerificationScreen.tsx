@@ -122,8 +122,11 @@ export default function AdminVerificationScreen({ navigation }: any) {
   return (
     <View className="flex-1 bg-gray-950" style={{ paddingTop: insets.top }}>
       <View className="px-6 py-4 flex-row items-center border-b border-gray-900">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
+        {/* <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
           <Ionicons name="arrow-back" size={24} color="white" />
+        </TouchableOpacity> */}
+        <TouchableOpacity onPress={() => navigation.openDrawer()} className="mr-4">
+          <Ionicons name="menu" size={24} color="white" />
         </TouchableOpacity>
         <Text className="text-xl font-bold text-white">Pending Verifications</Text>
       </View>

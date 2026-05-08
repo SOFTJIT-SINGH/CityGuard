@@ -84,9 +84,14 @@ export default function FeedbackScreen({ navigation }: any) {
     >
       <View style={{ flex: 1, paddingTop: insets.top }}>
         <View className="px-6 py-4 flex-row items-center justify-between border-b border-gray-900">
-           <TouchableOpacity onPress={() => navigation.goBack()}>
-             <Ionicons name="arrow-back" size={24} color="#10B981" />
-           </TouchableOpacity>
+           <View className="flex-row items-center">
+             {/* <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
+               <Ionicons name="arrow-back" size={24} color="#10B981" />
+             </TouchableOpacity> */}
+             <TouchableOpacity onPress={() => navigation.openDrawer()} className="mr-3">
+               <Ionicons name="menu" size={24} color="#10B981" />
+             </TouchableOpacity>
+           </View>
            <Text className="text-lg font-black text-white tracking-widest uppercase">Citizen Feedback</Text>
            <View style={{ width: 24 }} />
         </View>

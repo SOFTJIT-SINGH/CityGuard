@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Circle } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 
 // Tactical Dark Grid Style
@@ -14,7 +15,7 @@ const darkMapStyle = [
   { featureType: "poi", stylers: [{ visibility: "off" }] }
 ];
 
-export default function CrimeMapScreen() {
+export default function CrimeMapScreen({ navigation }: any) {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [hotspots, setHotspots] = useState<any[]>([]);
 
@@ -112,9 +113,14 @@ export default function CrimeMapScreen() {
       </MapView>
 
       <View className="absolute top-12 left-4 right-4 bg-gray-900/90 p-4 rounded-2xl shadow-lg border border-gray-800 backdrop-blur-md flex-row items-center justify-between">
-        <View>
-          <Text className="text-xl font-black text-white tracking-tight text-emerald-500">CITYGUARD LIVE</Text>
-          <Text className="text-[10px] uppercase font-bold text-gray-400 mt-1 tracking-widest">Tactical Threat Heatmap</Text>
+        <View className="flex-row items-center">
+          <TouchableOpacity onPress={() => navigation.openDrawer()} className="mr-4 bg-gray-800 p-2 rounded-xl border border-gray-700">
+            <Ionicons name="menu" size={24} color="#10B981" />
+          </TouchableOpacity>
+          <View>
+            <Text className="text-xl font-black text-white tracking-tight text-emerald-500">CITYGUARD LIVE</Text>
+            <Text className="text-[10px] uppercase font-bold text-gray-400 mt-1 tracking-widest">Tactical Threat Heatmap</Text>
+          </View>
         </View>
         <View className="h-4 w-4 rounded-full bg-red-600 animate-pulse border-2 border-red-900 shadow-lg shadow-red-500" />
       </View>

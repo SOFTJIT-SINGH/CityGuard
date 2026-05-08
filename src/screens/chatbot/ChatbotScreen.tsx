@@ -37,7 +37,7 @@ const TypingIndicator = () => {
   );
 };
 
-export default function ChatbotScreen() {
+export default function ChatbotScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -101,6 +101,9 @@ export default function ChatbotScreen() {
       <View className="flex-1 bg-gray-950" style={{ paddingTop: Math.max(insets.top, 20) }}>
         
         <View className="px-6 py-4 flex-row items-center border-b border-gray-800 bg-gray-900">
+          <TouchableOpacity onPress={() => navigation.openDrawer()} className="mr-4 bg-gray-800 p-2 rounded-xl border border-gray-700">
+            <Ionicons name="menu" size={24} color="#10B981" />
+          </TouchableOpacity>
           <View className="bg-emerald-500/10 p-2 rounded-full mr-3 border border-emerald-500/20">
             <Ionicons name="hardware-chip" size={24} color="#10B981" />
           </View>

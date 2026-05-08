@@ -3,9 +3,11 @@ import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, ScrollVi
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../context/AuthContext';
 
 export default function EditProfileScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
+  const { user, profile, loading: authLoading } = useAuth();
   
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -15,32 +17,16 @@ export default function EditProfileScreen({ navigation }: any) {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('full_name, phone_number, blood_type, ice_contact')
-          .eq('id', user.id)
-          .single();
-
-        if (data) {
-          setFullName(data.full_name || '');
-          setPhoneNumber(data.phone_number || '');
-          setBloodType(data.blood_type || '');
-          setIceContact(data.ice_contact || '');
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
+    if (!authLoading && profile) {
+      setFullName(profile.full_name || '');
+      setPhoneNumber(profile.phone_number || '');
+      setBloodType(profile.blood_type || '');
+      setIceContact(profile.ice_contact || '');
+      setLoading(false);
+    } else if (!authLoading && !profile) {
       setLoading(false);
     }
-  };
+  }, [profile, authLoading]);
 
   const handleUpdate = async () => {
     if (!fullName) {
@@ -94,13 +80,21 @@ export default function EditProfileScreen({ navigation }: any) {
         keyboardShouldPersistTaps="handled"
       >
         
-        <TouchableOpacity 
-          onPress={() => navigation.goBack()} 
-          className="mb-8 flex-row items-center bg-gray-900 self-start px-4 py-2 rounded-full border border-gray-800"
-        >
-          <Ionicons name="chevron-back" size={20} color="#10B981" />
-          <Text className="text-emerald-500 font-black ml-1 uppercase tracking-tighter text-xs">Back</Text>
-        </TouchableOpacity>
+        <View className="flex-row items-center mb-8">
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()} 
+            className="flex-row items-center bg-gray-900 px-4 py-2 rounded-xl border border-gray-800 mr-3"
+          >
+            <Ionicons name="chevron-back" size={20} color="#10B981" />
+            <Text className="text-emerald-500 font-black ml-1 uppercase tracking-tighter text-xs">Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => navigation.openDrawer()} 
+            className="bg-gray-900 p-2 rounded-xl border border-gray-800"
+          >
+            <Ionicons name="menu" size={20} color="#10B981" />
+          </TouchableOpacity>
+        </View>
 
         <View className="mb-8">
            <Text className="text-4xl font-black text-white tracking-widest uppercase">Edit Profile</Text>

@@ -100,21 +100,21 @@ export default function SupportScreen({ navigation }: any) {
         <View className="mb-12 space-y-4">
            <TouchableOpacity className="flex-row items-center bg-gray-900/50 p-4 rounded-2xl border border-gray-800">
              <View className="bg-blue-500/10 p-2 rounded-lg mr-4 border border-blue-500/20">
-               <Ionicons name="logo-twitter" size={18} color="#3B82F6" />
+               <Ionicons name="mail-open" size={18} color="#3B82F6" />
              </View>
-             <Text className="text-gray-300 font-bold">@CityGuard_HQ</Text>
+             <Text className="text-gray-300 font-bold">deeprabia2017@gmail.com</Text>
            </TouchableOpacity>
 
-           <TouchableOpacity className="flex-row items-center bg-gray-900/50 p-4 rounded-2xl border border-gray-800">
+           <TouchableOpacity className="flex-row items-center mt-4 bg-gray-900/50 p-4 rounded-2xl border border-gray-800">
              <View className="bg-emerald-500/10 p-2 rounded-lg mr-4 border border-emerald-500/20">
-               <Ionicons name="globe-outline" size={18} color="#10B981" />
+               <Ionicons name="phone-portrait" size={18} color="#10B981" />
              </View>
-             <Text className="text-gray-300 font-bold">www.cityguard.gov/portal</Text>
+             <Text className="text-gray-300 font-bold">+91 62806 41902</Text>
            </TouchableOpacity>
         </View>
 
         <Text className="text-center text-[10px] font-bold text-gray-700 uppercase tracking-widest mb-10">
-          CityGuard Support Protocol v1.4.0
+          CityGuard - Made by Ramandeep Kaur
         </Text>
       </ScrollView>
     </View>

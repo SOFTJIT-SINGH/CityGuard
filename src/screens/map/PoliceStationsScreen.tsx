@@ -169,9 +169,14 @@ export default function PoliceStationsScreen({ navigation }: any) {
   return (
     <View style={{ flex: 1, backgroundColor: '#030712', paddingTop: insets.top }}>
       <View className="px-6 py-4 flex-row items-center justify-between border-b border-gray-900">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="bg-gray-900 p-2 rounded-xl border border-gray-800">
-          <Ionicons name="arrow-back" size={20} color="#10B981" />
-        </TouchableOpacity>
+        <View className="flex-row items-center">
+          {/* <TouchableOpacity onPress={() => navigation.goBack()} className="bg-gray-900 p-2 rounded-xl border border-gray-800 mr-2">
+            <Ionicons name="arrow-back" size={20} color="#10B981" />
+          </TouchableOpacity> */}
+          <TouchableOpacity onPress={() => navigation.openDrawer()} className="bg-gray-900 p-2 rounded-xl border border-gray-800">
+            <Ionicons name="menu" size={20} color="#10B981" />
+          </TouchableOpacity>
+        </View>
         <Text className="text-lg font-black text-white tracking-widest uppercase">Safe Zone: Stations</Text>
         <TouchableOpacity onPress={getNearbyStations} className="bg-gray-900 p-2 rounded-xl border border-gray-800">
           <Ionicons name="refresh" size={20} color="#10B981" />

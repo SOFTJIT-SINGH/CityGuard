@@ -54,16 +54,11 @@ export default function VerificationScreen({ navigation }: any) {
     try {
       // Upload to images bucket
       const fileName = `verifications/${user?.id}/${Date.now()}.jpg`;
-      const formData = new FormData();
-      formData.append('file', {
-        uri: docImage,
-        name: fileName,
-        type: 'image/jpeg',
-      } as any);
-
+      const response = await fetch(docImage);
+      const blob = await response.blob();
       const { error: uploadError } = await supabase.storage
         .from('images')
-        .upload(fileName, formData, { contentType: 'image/jpeg' });
+        .upload(fileName, blob, { contentType: 'image/jpeg' });
 
       if (uploadError) throw uploadError;
 
@@ -78,6 +73,7 @@ export default function VerificationScreen({ navigation }: any) {
       if (dbError) throw dbError;
 
       Alert.alert("Success", "Verification document submitted successfully. Our team will review it soon.");
+      setDocImage(null);
       fetchVerificationStatus();
     } catch (error: any) {
       Alert.alert("Error", error.message);
@@ -89,8 +85,11 @@ export default function VerificationScreen({ navigation }: any) {
   return (
     <View className="flex-1 bg-gray-950" style={{ paddingTop: insets.top }}>
       <View className="px-6 py-4 flex-row items-center border-b border-gray-900">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
+        {/* <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
           <Ionicons name="arrow-back" size={24} color="white" />
+        </TouchableOpacity> */}
+        <TouchableOpacity onPress={() => navigation.openDrawer()} className="mr-4">
+          <Ionicons name="menu" size={24} color="white" />
         </TouchableOpacity>
         <Text className="text-xl font-bold text-white">ID Verification</Text>
       </View>

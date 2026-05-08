@@ -39,16 +39,11 @@ export default function ReportCrimeScreen({ navigation }: any) {
   const uploadImage = async (uri: string) => {
     try {
       const fileName = `${user?.id}/${Date.now()}.jpg`;
-      const formData = new FormData();
-      formData.append('file', {
-        uri,
-        name: fileName,
-        type: 'image/jpeg',
-      } as any);
-
+      const response = await fetch(uri);
+      const blob = await response.blob();
       const { data, error } = await supabase.storage
         .from('images')
-        .upload(fileName, formData, {
+        .upload(fileName, blob, {
           contentType: 'image/jpeg',
         });
 
@@ -88,8 +83,8 @@ export default function ReportCrimeScreen({ navigation }: any) {
           reported_at: new Date().toISOString(),
           severity: 'medium',
           image_url: uploadedImageUrl,
-          location_lat: location?.latitude,
-          location_lng: location?.longitude,
+          latitude: location?.latitude,
+          longitude: location?.longitude,
         }
       ]);
 
@@ -118,9 +113,17 @@ export default function ReportCrimeScreen({ navigation }: any) {
       <ScrollView className="p-6">
         
         <View className="mb-6 flex-row items-center justify-between border-b border-gray-800 pb-4 mt-4">
-            <View>
-                <Text className="text-2xl font-black text-white tracking-tight">Report Incident</Text>
-                <Text className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mt-1">Community Safety Log</Text>
+            <View className="flex-row items-center">
+              {/* <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3 bg-gray-900 p-2 rounded-xl border border-gray-800">
+                <Ionicons name="arrow-back" size={20} color="#10B981" />
+              </TouchableOpacity> */}
+              <TouchableOpacity onPress={() => navigation.openDrawer()} className="mr-4 bg-gray-900 p-2 rounded-xl border border-gray-800">
+                <Ionicons name="menu" size={20} color="#10B981" />
+              </TouchableOpacity>
+              <View>
+                  <Text className="text-2xl font-black text-white tracking-tight">Report Incident</Text>
+                  <Text className="text-[10px] font-bold text-gray-500 tracking-widest uppercase mt-1">Community Safety Log</Text>
+              </View>
             </View>
             <Ionicons name="shield-checkmark" size={28} color="#10B981" />
         </View>
@@ -177,4 +180,4 @@ export default function ReportCrimeScreen({ navigation }: any) {
       </ScrollView>
     </KeyboardAvoidingView>
   );
-}
+}

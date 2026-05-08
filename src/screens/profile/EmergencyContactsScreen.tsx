@@ -113,8 +113,11 @@ export default function EmergencyContactsScreen({ navigation }: any) {
   return (
     <View className="flex-1 bg-gray-950" style={{ paddingTop: insets.top }}>
       <View className="px-6 py-4 flex-row items-center border-b border-gray-900 bg-gray-950">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-4">
+        {/* <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
           <Ionicons name="chevron-back" size={24} color="#10B981" />
+        </TouchableOpacity> */}
+        <TouchableOpacity onPress={() => navigation.openDrawer()} className="mr-4">
+          <Ionicons name="menu" size={24} color="#10B981" />
         </TouchableOpacity>
         <Text className="text-xl font-black text-white tracking-tight">EMERGENCY CONTACTS</Text>
       </View>

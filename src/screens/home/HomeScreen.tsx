@@ -9,11 +9,13 @@ import { supabase } from '../../lib/supabase';
 import SOSModal from '../../components/ui/SOSButton';
 import { Audio } from 'expo-av';
 import * as SMS from 'expo-sms';
+import { useAuth } from '../../context/AuthContext';
 
 const { width } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
+  const { user, profile } = useAuth();
   const [showSOS, setShowSOS] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
@@ -21,33 +23,19 @@ export default function HomeScreen({ navigation }: any) {
 
   // 1. Dynamic User State
   const [userData, setUserData] = useState({
-    full_name: 'Loading...',
+    full_name: 'Citizen',
     operative_id: 'PENDING',
   });
 
-  // 2. Fetch Profile from Supabase on Load
-  useFocusEffect(
-    useCallback(() => {
-      const fetchProfile = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('full_name, operative_id')
-            .eq('id', user.id)
-            .single();
-
-          if (data) {
-            setUserData({
-              full_name: data.full_name || 'User',
-              operative_id: data.operative_id || 'UNKNOWN',
-            });
-          }
-        }
-      };
-      fetchProfile();
-    }, [])
-  );
+  // 2. Sync with AuthContext Profile
+  useEffect(() => {
+    if (profile) {
+      setUserData({
+        full_name: profile.full_name || 'User',
+        operative_id: profile.operative_id || 'UNKNOWN',
+      });
+    }
+  }, [profile]);
 
   const triggerSOS = () => {
     setCountdown(5);
