@@ -59,6 +59,7 @@ export default function MainNavigator() {
           drawerIcon: ({ color, size }) => (
             <Ionicons name={isAdmin ? "terminal" : "home"} size={size} color={color} />
           ),
+          // Keep dashboard visible for both
         }}
       />
 
@@ -85,6 +86,7 @@ export default function MainNavigator() {
           drawerIcon: ({ color, size }) => (
             <Ionicons name="shield-checkmark-outline" size={size} color={color} />
           ),
+          drawerItemStyle: isAdmin ? { display: 'none' } : undefined
         }}
       />
 
@@ -97,6 +99,7 @@ export default function MainNavigator() {
           drawerIcon: ({ color, size }) => (
             <Ionicons name="people-outline" size={size} color={color} />
           ),
+          drawerItemStyle: isAdmin ? { display: 'none' } : undefined
         }}
       />
 
@@ -109,6 +112,7 @@ export default function MainNavigator() {
           drawerIcon: ({ color, size }) => (
             <Ionicons name="folder-open-outline" size={size} color={color} />
           ),
+          drawerItemStyle: isAdmin ? { display: 'none' } : undefined
         }}
       />
 
@@ -121,6 +125,7 @@ export default function MainNavigator() {
           drawerIcon: ({ color, size }) => (
             <Ionicons name="shield-checkmark-outline" size={size} color={color} />
           ),
+          drawerItemStyle: isAdmin ? { display: 'none' } : undefined
         }}
       />
 
@@ -142,7 +147,7 @@ export default function MainNavigator() {
             name="AdminVerifications"
             component={AdminVerificationScreen}
             options={{
-              title: 'Review IDs',
+              title: 'Review ID',
               drawerIcon: ({ color, size }) => (
                 <Ionicons name="id-card-outline" size={size} color={color} />
               ),
@@ -178,7 +183,7 @@ export default function MainNavigator() {
         name="BroadcastOverride"
         component={BroadcastOverrideScreen}
         options={{
-          title: 'Broadcast Override',
+          title: isAdmin ? 'Broadcast Override' : 'Broadcast Override',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="warning-outline" size={size} color={color} />
           ),
@@ -233,12 +238,27 @@ export default function MainNavigator() {
         name="ActiveDispatch"
         component={ActiveDispatchScreen}
         options={{
-          title: 'Active Alerts',
+          title: isAdmin ? 'Active Alerts' : 'Active Alerts',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="radio-outline" size={size} color={color} />
           ),
         }}
       />
+
+      {/* Doc Verify (Alias for AIScanner for admin) */}
+      {isAdmin && (
+        <Drawer.Screen
+          key="doc-verify"
+          name="DocVerify"
+          component={AIScannerScreen}
+          options={{
+            title: 'Doc Verify',
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="id-card-outline" size={size} color={color} />
+            ),
+          }}
+        />
+      )}
       
       <Drawer.Screen
         key="ai-scanner"
@@ -261,6 +281,7 @@ export default function MainNavigator() {
           drawerIcon: ({ color, size }) => (
             <Ionicons name="shield-checkmark-outline" size={size} color={color} />
           ),
+          drawerItemStyle: isAdmin ? { display: 'none' } : undefined
         }}
       />
 
@@ -273,6 +294,7 @@ export default function MainNavigator() {
           drawerIcon: ({ color, size }) => (
             <Ionicons name="chatbubbles-outline" size={size} color={color} />
           ),
+          drawerItemStyle: isAdmin ? { display: 'none' } : undefined
         }}
       />
 
@@ -285,6 +307,7 @@ export default function MainNavigator() {
           drawerIcon: ({ color, size }) => (
             <Ionicons name="call-outline" size={size} color={color} />
           ),
+          drawerItemStyle: isAdmin ? { display: 'none' } : undefined
         }}
       />
 
@@ -297,6 +320,7 @@ export default function MainNavigator() {
           drawerIcon: ({ color, size }) => (
             <Ionicons name="warning-outline" size={size} color={color} />
           ),
+          drawerItemStyle: isAdmin ? { display: 'none' } : undefined
         }}
       />
 
@@ -305,7 +329,7 @@ export default function MainNavigator() {
         name="Chatbot"
         component={ChatbotScreen}
         options={{
-          title: 'AI Safety Assistant',
+          title: isAdmin ? 'City Guard AI' : 'AI Safety Assistant',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="hardware-chip-outline" size={size} color={color} />
           ),
@@ -317,7 +341,7 @@ export default function MainNavigator() {
         name="CrimeMap"
         component={CrimeMapScreen}
         options={{
-          title: 'Live Threat Map',
+          title: isAdmin ? 'Heatmap' : 'Live Threat Map',
           drawerIcon: ({ color, size }) => (
             <Ionicons name="map-outline" size={size} color={color} />
           ),
@@ -345,6 +369,7 @@ export default function MainNavigator() {
           drawerIcon: ({ color, size }) => (
             <Ionicons name="help-buoy-outline" size={size} color={color} />
           ),
+          drawerItemStyle: isAdmin ? { display: 'none' } : undefined
         }}
       />
 
