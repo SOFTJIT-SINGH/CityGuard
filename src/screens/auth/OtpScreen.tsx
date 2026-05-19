@@ -3,9 +3,11 @@ import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../context/AuthContext';
 
 export default function OtpScreen({ route, navigation }: any) {
   const { email } = route.params;
+  const { refreshProfile } = useAuth();
   const userData = route.params?.userDataString ? JSON.parse(route.params.userDataString) : route.params?.userData;
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
@@ -53,6 +55,7 @@ export default function OtpScreen({ route, navigation }: any) {
           "Email verified! However, there was an issue saving your profile details: " + profileError.message
         );
       } else {
+        await refreshProfile(verifyData.user.id);
         Alert.alert("Success", "Verification complete! Account and profile created.");
       }
     }

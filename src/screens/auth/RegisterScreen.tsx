@@ -4,9 +4,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../context/AuthContext';
 
 export default function RegisterScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
+  const { refreshProfile } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,6 +41,14 @@ export default function RegisterScreen({ navigation }: any) {
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+        data: {
+          full_name: name,
+          phone_number: phoneNumber,
+          blood_type: bloodGroup,
+          ice_contact: iceContact,
+        }
+      }
     });
 
     setLoading(false);
@@ -48,7 +58,30 @@ export default function RegisterScreen({ navigation }: any) {
       return;
     }
 
-    // Navigate to the OTP verification screen using the real email
+    // If session is returned, email confirmation is off and user is immediately logged in.
+    // We must create the profile here because OtpScreen will be bypassed.
+    if (authData.session && authData.user) {
+      const { error: profileError } = await supabase.from('profiles').upsert([
+        {
+          id: authData.user.id,
+          full_name: name,
+          phone_number: phoneNumber,
+          blood_type: bloodGroup,
+          ice_contact: iceContact,
+          operative_id: `OP-${Math.floor(100000 + Math.random() * 900000)}`,
+          role: 'civilian'
+        }
+      ], { onConflict: 'id' });
+      
+      if (profileError) {
+        console.error("Profile insertion error:", profileError);
+      } else {
+        await refreshProfile(authData.user.id);
+      }
+      return; // RootNavigator will automatically switch to MainNavigator
+    }
+
+    // Otherwise, email confirmation is ON, navigate to the OTP verification screen
     navigation.navigate('Otp', {
       email: email,
       userDataString: JSON.stringify({

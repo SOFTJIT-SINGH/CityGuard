@@ -7,9 +7,10 @@ type AuthContextType = {
   user: User | null;
   profile: any | null;
   loading: boolean;
+  refreshProfile: (userId?: string) => Promise<void>;
 };
 
-const AuthContext = createContext<AuthContextType>({ session: null, user: null, profile: null, loading: true });
+const AuthContext = createContext<AuthContextType>({ session: null, user: null, profile: null, loading: true, refreshProfile: async () => {} });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -75,7 +76,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     session,
     user,
     profile,
-    loading
+    loading,
+    refreshProfile: async (userId?: string) => {
+      if (userId) {
+        await fetchProfile(userId);
+      } else if (user?.id) {
+        await fetchProfile(user.id);
+      }
+    }
   }), [session, user, profile, loading]);
 
   return (
