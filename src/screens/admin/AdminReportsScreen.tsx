@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -85,6 +85,14 @@ export default function AdminReportsScreen({ navigation }: any) {
       </View>
       
       <Text className="text-gray-400 text-sm mb-3" numberOfLines={2}>{item.description}</Text>
+
+      {item.image_url && (
+        <Image 
+          source={{ uri: item.image_url }} 
+          className="w-full h-32 rounded-xl mb-3 border border-gray-850"
+          resizeMode="cover"
+        />
+      )}
       
       <View className="flex-row justify-between items-center">
         <View className="flex-row items-center">

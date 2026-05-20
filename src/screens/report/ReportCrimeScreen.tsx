@@ -5,18 +5,23 @@ import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { decodeBase64ToArrayBuffer } from "../../lib/binary";
 
 export default function ReportCrimeScreen({ navigation }: any) {
   const { user } = useAuth();
   const [image, setImage] = useState<string | null>(null);
+  const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [location, setLocation] = useState<any>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.7 });
-    if (!result.canceled) setImage(result.assets[0].uri);
+    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.7, base64: true });
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      setImageBase64(result.assets[0].base64 || null);
+    }
   };
 
   const openCamera = async () => {
@@ -25,8 +30,11 @@ export default function ReportCrimeScreen({ navigation }: any) {
       Alert.alert("Permission denied", "Camera access is required to take photos.");
       return;
     }
-    const result = await ImagePicker.launchCameraAsync({ quality: 0.7 });
-    if (!result.canceled) setImage(result.assets[0].uri);
+    const result = await ImagePicker.launchCameraAsync({ quality: 0.7, base64: true });
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      setImageBase64(result.assets[0].base64 || null);
+    }
   };
 
   const getLocation = async () => {
@@ -36,14 +44,14 @@ export default function ReportCrimeScreen({ navigation }: any) {
     setLocation(loc.coords);
   };
 
-  const uploadImage = async (uri: string) => {
+  const uploadImage = async (base64Data: string) => {
     try {
       const fileName = `${user?.id}/${Date.now()}.jpg`;
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      const { data, error } = await supabase.storage
+      const arrayBuffer = decodeBase64ToArrayBuffer(base64Data);
+
+      const { error } = await supabase.storage
         .from('images')
-        .upload(fileName, blob, {
+        .upload(fileName, arrayBuffer, {
           contentType: 'image/jpeg',
         });
 
@@ -69,8 +77,8 @@ export default function ReportCrimeScreen({ navigation }: any) {
     setLoading(true);
     try {
       let uploadedImageUrl = null;
-      if (image) {
-        uploadedImageUrl = await uploadImage(image);
+      if (imageBase64) {
+        uploadedImageUrl = await uploadImage(imageBase64);
       }
       
       const { error } = await supabase.from('reports').insert([
@@ -99,6 +107,7 @@ export default function ReportCrimeScreen({ navigation }: any) {
       setTitle("");
       setDescription("");
       setImage(null);
+      setImageBase64(null);
       setLocation(null);
     } catch (error: any) {
       console.error("Submission Error:", error);

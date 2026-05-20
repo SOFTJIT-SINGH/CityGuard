@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -151,6 +151,14 @@ export default function IntelHubScreen({ navigation }: any) {
  
             <Text className="text-white text-xl font-black mt-4 mb-1 uppercase tracking-tight">{report.title}</Text>
             <Text className="text-gray-400 text-sm leading-relaxed mb-4">{report.description}</Text>
+
+            {report.image_url && (
+              <Image 
+                source={{ uri: report.image_url }} 
+                className="w-full h-48 rounded-2xl mb-4 border border-gray-800"
+                resizeMode="cover"
+              />
+            )}
             
             <View className="flex-row items-center justify-between border-t border-gray-800 pt-4">
               <View className="flex-row items-center">

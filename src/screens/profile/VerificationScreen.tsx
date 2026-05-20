@@ -5,12 +5,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { decodeBase64ToArrayBuffer } from '../../lib/binary';
 
 export default function VerificationScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const { user, profile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [docImage, setDocImage] = useState<string | null>(null);
+  const [docImageBase64, setDocImageBase64] = useState<string | null>(null);
   const [verificationStatus, setVerificationStatus] = useState<any>(null);
 
   useEffect(() => {
@@ -37,15 +39,17 @@ export default function VerificationScreen({ navigation }: any) {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.8,
+      base64: true,
     });
 
     if (!result.canceled) {
       setDocImage(result.assets[0].uri);
+      setDocImageBase64(result.assets[0].base64 || null);
     }
   };
 
   const submitVerification = async () => {
-    if (!docImage) {
+    if (!docImageBase64) {
       Alert.alert("Error", "Please select a document image first.");
       return;
     }
@@ -54,11 +58,11 @@ export default function VerificationScreen({ navigation }: any) {
     try {
       // Upload to images bucket
       const fileName = `verifications/${user?.id}/${Date.now()}.jpg`;
-      const response = await fetch(docImage);
-      const blob = await response.blob();
+      const arrayBuffer = decodeBase64ToArrayBuffer(docImageBase64);
+
       const { error: uploadError } = await supabase.storage
         .from('images')
-        .upload(fileName, blob, { contentType: 'image/jpeg' });
+        .upload(fileName, arrayBuffer, { contentType: 'image/jpeg' });
 
       if (uploadError) throw uploadError;
 
@@ -74,6 +78,7 @@ export default function VerificationScreen({ navigation }: any) {
 
       Alert.alert("Success", "Verification document submitted successfully. Our team will review it soon.");
       setDocImage(null);
+      setDocImageBase64(null);
       fetchVerificationStatus();
     } catch (error: any) {
       Alert.alert("Error", error.message);

@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -94,6 +94,14 @@ export default function MyReportsScreen({ navigation }: any) {
                 <Text className="text-gray-400 font-bold text-[10px] uppercase tracking-widest mb-1">Details</Text>
                 <Text className="text-gray-300 leading-5">{report.description || 'No additional details provided.'}</Text>
             </View>
+
+            {report.image_url && (
+              <Image 
+                source={{ uri: report.image_url }} 
+                className="w-full h-48 rounded-2xl mt-4 border border-gray-800"
+                resizeMode="cover"
+              />
+            )}
 
             <View className="mt-4 pt-4 border-t border-gray-800/50 flex-row items-center">
                 <Ionicons name="finger-print" size={14} color="#10B981" />
